@@ -1,1 +1,695 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --bg: #0a0a0a;
+  --card: #1a1a1a;
+  --muted: #b0b0b0;
+  --accent: #d4af37;
+  --glass: rgba(255, 255, 255, 0.05);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: "Microsoft YaHei", Arial, sans-serif;
+  background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+  color: #e0e0e0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 28px;
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.site-title {
+  font-family: "Microsoft YaHei", "PingFang SC", Arial;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.6px;
+  color: #d4af37;
+}
+
+.nav-links a {
+  color: #b0b0b0;
+  margin-left: 18px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #d4af37;
+}
+
+.nav-links a.active {
+  color: #d4af37;
+}
+
+.header-hero {
+  max-width: 1200px;
+  margin: 28px auto;
+  padding: 0 20px;
+}
+.hero-card {
+  background: linear-gradient(
+    90deg,
+    rgba(212, 175, 55, 0.1),
+    rgba(26, 26, 26, 0.3)
+  );
+  padding: 18px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(212, 175, 55, 0.1);
+}
+.hero-card h1 {
+  margin: 0;
+  font-size: 28px;
+  color: #d4af37;
+}
+.hero-card p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.search-wrap {
+  max-width: 900px;
+  margin: 18px auto;
+  padding: 0 20px;
+}
+.search-box {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+}
+.search-box input[type="text"],
+.search-box select,
+.search-box input[type="date"] {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: rgba(26, 26, 26, 0.8);
+  color: #e0e0e0;
+  min-width: 140px;
+}
+.search-box input::placeholder {
+  color: #666;
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #0a0a0a;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.btn:hover {
+  background-color: #b8941f;
+  transform: translateY(-1px);
+}
+.btn.ghost {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+.btn.ghost:hover {
+  background: var(--accent);
+  color: #0a0a0a;
+}
+
+.carousel {
+  max-width: 1200px;
+  margin: 22px auto;
+  position: relative;
+  padding: 0 20px;
+}
+.carousel-track {
+  position: relative;
+  height: 320px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1a1a1a;
+  border: 1px solid rgba(212, 175, 55, 0.1);
+}
+.carousel-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: opacity 0.6s ease, transform 0.5s ease;
+  opacity: 0;
+  transform: scale(1);
+}
+.carousel-slide.active {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 1;
+}
+.carousel-caption {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: rgba(10, 10, 10, 0.85);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  color: #d4af37;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.events-grid .event-card,
+.events-grid .event-card .meta h3,
+.events-grid .event-card .meta p {
+  text-decoration: none;
+}
+.events-grid {
+  max-width: 1200px;
+  margin: 20px auto 60px;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+}
+.event-card {
+  height: 220px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+  transition: all 0.25s ease;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  padding: 14px;
+  color: #ffffff;
+  background-color: var(--card);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+}
+.event-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 10, 0),
+    rgba(10, 10, 10, 0.8)
+  );
+}
+.event-card .meta {
+  position: relative;
+  z-index: 2;
+  backdrop-filter: blur(4px);
+}
+.event-card .meta h3 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.1;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: #ffffff;
+}
+.event-card .meta p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: rgba(212, 175, 55, 0.9);
+}
+
+.event-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 40px rgba(212, 175, 55, 0.3);
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+.event-detail-wrap {
+  max-width: 900px;
+  margin: 26px auto;
+  padding: 0 20px;
+}
+.event-header {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.event-header .cover {
+  flex: 0 0 420px;
+  height: 300px;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  cursor: zoom-in;
+  border: 1px solid rgba(212, 175, 55, 0.1);
+}
+.event-header .cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.event-header .cover:hover img {
+  transform: scale(1.03);
+}
+.event-info {
+  flex: 1;
+}
+.event-info h2 {
+  margin: 0 0 8px;
+  color: var(--accent);
+}
+.event-info .meta {
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.95);
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+.modal .content {
+  max-width: 90%;
+  max-height: 90%;
+  position: relative;
+}
+.modal img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+.modal .close {
+  position: absolute;
+  right: -8px;
+  top: -8px;
+  background: #1a1a1a;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+@media (max-width: 880px) {
+  .event-header {
+    flex-direction: column;
+  }
+  .event-header .cover {
+    width: 100%;
+    height: 240px;
+  }
+  .carousel-track {
+    height: 220px;
+  }
+}
+
+
+
+
+/* 和平鸽飘落效果 */
+.dove-fall {
+  position: fixed;
+  top: -50px;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.dove {
+  position: absolute;
+  top: -20px;
+  opacity: 0;
+  animation: dove-fall linear infinite;
+}
+
+/* 和平鸽形状 - 使用CSS绘制 */
+.dove::before,
+.dove::after {
+  content: '';
+  position: absolute;
+  background: #d4af37; /* 使用主题金色 */
+}
+
+/* 鸽子身体 */
+.dove::before {
+  width: 16px;
+  height: 8px;
+  border-radius: 50% 50% 40% 40%;
+  top: 8px;
+  left: 4px;
+}
+
+/* 鸽子翅膀 */
+.dove::after {
+  width: 12px;
+  height: 6px;
+  border-radius: 50% 0 0 50%;
+  top: 6px;
+  left: 12px;
+  transform: rotate(-30deg);
+  transform-origin: left center;
+  animation: wing-flap 2s ease-in-out infinite;
+}
+
+/* 鸽子头部 */
+.dove .head {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #d4af37;
+  border-radius: 50%;
+  top: 6px;
+  left: 2px;
+}
+
+/* 鸽子尾巴 */
+.dove .tail {
+  position: absolute;
+  width: 8px;
+  height: 4px;
+  background: #d4af37;
+  border-radius: 0 50% 50% 0;
+  top: 12px;
+  left: 0;
+}
+
+/* 橄榄枝 */
+.dove .olive-branch {
+  position: absolute;
+  width: 10px;
+  height: 2px;
+  background: #2e7d32; /* 绿色代表和平 */
+  border-radius: 1px;
+  top: 14px;
+  left: 18px;
+  transform: rotate(15deg);
+}
+
+.dove .olive-branch::before {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #2e7d32;
+  border-radius: 50%;
+  top: -1px;
+  right: -2px;
+}
+
+/* 翅膀扇动动画 */
+@keyframes wing-flap {
+  0%, 100% {
+    transform: rotate(-30deg);
+  }
+  50% {
+    transform: rotate(-45deg);
+  }
+}
+
+/* 飘落动画 */
+@keyframes dove-fall {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateX(10px) rotate(5deg);
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(100vh) translateX(-10px) rotate(-5deg);
+    opacity: 0;
+  }
+}
+
+/* 不同大小的鸽子 */
+.dove.small {
+  transform: scale(0.7);
+}
+
+.dove.medium {
+  transform: scale(1);
+}
+
+.dove.large {
+  transform: scale(1.3);
+}
+
+/* 为每个鸽子设置不同的动画参数 - 分布在两侧 */
+.dove:nth-child(1) {
+  left: 5%;
+  animation-duration: 15s;
+  animation-delay: 0s;
+}
+
+.dove:nth-child(2) {
+  left: 15%;
+  animation-duration: 12s;
+  animation-delay: 2s;
+}
+
+.dove:nth-child(3) {
+  left: 25%;
+  animation-duration: 18s;
+  animation-delay: 4s;
+}
+
+.dove:nth-child(4) {
+  left: 75%;
+  animation-duration: 14s;
+  animation-delay: 1s;
+}
+
+.dove:nth-child(5) {
+  left: 85%;
+  animation-duration: 16s;
+  animation-delay: 3s;
+}
+
+.dove:nth-child(6) {
+  left: 95%;
+  animation-duration: 13s;
+  animation-delay: 5s;
+}
+
+.dove:nth-child(7) {
+  left: 8%;
+  animation-duration: 17s;
+  animation-delay: 6s;
+}
+
+.dove:nth-child(8) {
+  left: 92%;
+  animation-duration: 11s;
+  animation-delay: 7s;
+}
+
+.dove:nth-child(9) {
+  left: 12%;
+  animation-duration: 19s;
+  animation-delay: 8s;
+}
+
+.dove:nth-child(10) {
+  left: 88%;
+  animation-duration: 15s;
+  animation-delay: 9s;
+}
+
+/* 更多鸽子分布在两侧 */
+.dove:nth-child(11) {
+  left: 3%;
+  animation-duration: 14s;
+  animation-delay: 10s;
+}
+
+.dove:nth-child(12) {
+  left: 97%;
+  animation-duration: 16s;
+  animation-delay: 11s;
+}
+
+.dove:nth-child(13) {
+  left: 18%;
+  animation-duration: 12s;
+  animation-delay: 12s;
+}
+
+.dove:nth-child(14) {
+  left: 82%;
+  animation-duration: 18s;
+  animation-delay: 13s;
+}
+
+.dove:nth-child(15) {
+  left: 22%;
+  animation-duration: 15s;
+  animation-delay: 14s;
+}
+
+
+
+
+
+
+/* 爱心拖尾效果 */
+.trail-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.trail-heart {
+  position: absolute;
+  opacity: 0;
+  animation: heart-fade 0.8s ease-out forwards;
+  transform: translate(-50%, -50%);
+}
+
+/* 爱心形状 - 使用CSS绘制 */
+.trail-heart::before,
+.trail-heart::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 14px;
+  background: #d4af37;
+  border-radius: 50px 50px 0 0;
+}
+
+.trail-heart::before {
+  left: 8px;
+  transform: rotate(-45deg);
+  transform-origin: 0 100%;
+}
+
+.trail-heart::after {
+  left: 0;
+  transform: rotate(45deg);
+  transform-origin: 100% 100%;
+}
+
+/* 爱心淡出动画 */
+@keyframes heart-fade {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  }
+  30% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(1.1) rotate(10deg);
+  }
+  60% {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(0.9) rotate(-5deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6) rotate(15deg);
+  }
+}
+
+/* 不同大小的爱心 */
+.trail-heart.small::before,
+.trail-heart.small::after {
+  width: 4px;
+  height: 7px;
+  animation-duration: 0.6s;
+}
+
+.trail-heart.medium::before,
+.trail-heart.medium::after {
+  width: 6px;
+  height: 10px;
+  animation-duration: 0.7s;
+}
+
+.trail-heart.large::before,
+.trail-heart.large::after {
+  width: 10px;
+  height: 17px;
+  animation-duration: 0.9s;
+}
+
+/* 不同颜色的爱心 */
+.trail-heart.gold {
+  /* 使用伪元素颜色 */
+}
+.trail-heart.gold::before,
+.trail-heart.gold::after {
+  background: #d4af37;
+}
+
+.trail-heart.pink {
+  /* 粉色爱心 */
+}
+.trail-heart.pink::before,
+.trail-heart.pink::after {
+  background: #ff6b9d;
+}
+
+.trail-heart.white {
+  /* 白色爱心 */
+}
+.trail-heart.white::before,
+.trail-heart.white::after {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.trail-heart.green {
+  /* 绿色爱心 */
+}
+.trail-heart.green::before,
+.trail-heart.green::after {
+  background: rgba(46, 125, 50, 0.7);
+}
+
+/* 跳动效果变体 */
+.trail-heart.bounce::before,
+.trail-heart.bounce::after {
+  animation: heart-beat 0.8s ease-in-out;
+}
+
+@keyframes heart-beat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}

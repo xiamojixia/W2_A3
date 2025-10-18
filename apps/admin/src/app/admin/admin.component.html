@@ -1,0 +1,246 @@
+<style>
+nav {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+nav button {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+nav button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table, th, td {
+  border: 1px solid #ccc;
+}
+
+th, td {
+  padding: 6px 12px;
+  text-align: left;
+}
+
+form {
+  margin-bottom: 30px;
+}
+
+form input, form select {
+  display: block;
+  margin: 5px 0;
+  padding: 6px;
+  width: 100%;
+  max-width: 400px;
+}
+
+form button {
+  margin-top: 10px;
+  padding: 8px 16px;
+}
+</style>
+
+<nav>
+  <button (click)="activeTab='events'" [class.active]="activeTab==='events'">Event Management</button>
+  <button (click)="activeTab='categories'" [class.active]="activeTab==='categories'">Category Management</button>
+  <button (click)="activeTab='organisations'" [class.active]="activeTab==='organisations'">Organisation Management</button>
+  <button (click)="activeTab='registrations'" [class.active]="activeTab==='registrations'">Registration Management</button>
+</nav>
+
+<div [ngSwitch]="activeTab">
+
+  <!-- EVENTS -->
+  <div *ngSwitchCase="'events'">
+    <h2>Event Management</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Category ID</th>
+          <th>Organisation ID</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Price</th>
+          <th>Goal</th>
+          <th>Current</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let e of events">
+          <td>{{e.id}}</td>
+          <td>{{e.name}}</td>
+          <td>{{e.category_id}}</td>
+          <td>{{e.org_id}}</td>
+          <td>{{e.start_datetime}}</td>
+          <td>{{e.end_datetime}}</td>
+          <td>{{e.price}}</td>
+          <td>{{e.goal_amount}}</td>
+          <td>{{e.current_amount}}</td>
+          <td>{{e.status}}</td>
+          <td>
+            <button (click)="editEvent(e)">Edit</button>
+            <button (click)="deleteEvent(e.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Add / Edit Event</h3>
+    <form (ngSubmit)="addEvent()">
+      <input placeholder="Name" [(ngModel)]="newEvent.name" name="name" required>
+      <input placeholder="Category ID" [(ngModel)]="newEvent.category_id" name="category_id" type="number" required>
+      <input placeholder="Organisation ID" [(ngModel)]="newEvent.org_id" name="org_id" type="number" required>
+      <input placeholder="Start Datetime" [(ngModel)]="newEvent.start_datetime" name="start_datetime" type="datetime-local">
+      <input placeholder="End Datetime" [(ngModel)]="newEvent.end_datetime" name="end_datetime" type="datetime-local">
+      <input placeholder="Price" [(ngModel)]="newEvent.price" name="price" type="number">
+      <input placeholder="Goal Amount" [(ngModel)]="newEvent.goal_amount" name="goal_amount" type="number">
+      <input placeholder="Image URL" [(ngModel)]="newEvent.image_url" name="image_url">
+      <select [(ngModel)]="newEvent.status" name="status">
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+        <option value="close">Close</option>
+        <option value="cancel">Cancel</option>
+      </select>
+      <button type="submit">Save</button>
+    </form>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div *ngSwitchCase="'categories'">
+    <h2>Category Management</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of categories">
+          <td>{{c.id}}</td>
+          <td>{{c.name}}</td>
+          <td>{{c.description}}</td>
+          <td>
+            <button (click)="editCategory(c)">Edit</button>
+            <button (click)="deleteCategory(c.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Add / Edit Category</h3>
+    <form (ngSubmit)="addCategory()">
+      <input placeholder="Name" [(ngModel)]="newCategory.name" name="name" required>
+      <input placeholder="Description" [(ngModel)]="newCategory.description" name="description">
+      <button type="submit">Save</button>
+    </form>
+  </div>
+
+  <!-- ORGANISATIONS -->
+  <div *ngSwitchCase="'organisations'">
+    <h2>Organisation Management</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Address</th>
+          <th>Logo URL</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let o of organisations">
+          <td>{{o.id}}</td>
+          <td>{{o.name}}</td>
+          <td>{{o.description}}</td>
+          <td>{{o.contact_email}}</td>
+          <td>{{o.contact_phone}}</td>
+          <td>{{o.address}}</td>
+          <td>{{o.logo_url}}</td>
+          <td>
+            <button (click)="editOrganisation(o)">Edit</button>
+            <button (click)="deleteOrganisation(o.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Add / Edit Organisation</h3>
+    <form (ngSubmit)="addOrganisation()">
+      <input placeholder="Name" [(ngModel)]="newOrganisation.name" name="name" required>
+      <input placeholder="Description" [(ngModel)]="newOrganisation.description" name="description">
+      <input placeholder="Email" [(ngModel)]="newOrganisation.contact_email" name="contact_email">
+      <input placeholder="Phone" [(ngModel)]="newOrganisation.contact_phone" name="contact_phone">
+      <input placeholder="Address" [(ngModel)]="newOrganisation.address" name="address">
+      <input placeholder="Logo URL" [(ngModel)]="newOrganisation.logo_url" name="logo_url">
+      <button type="submit">Save</button>
+    </form>
+  </div>
+
+  <!-- REGISTRATIONS -->
+  <div *ngSwitchCase="'registrations'">
+    <h2>Registration Management</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Event ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Tickets</th>
+          <th>Comments</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of registrations">
+          <td>{{r.id}}</td>
+          <td>{{r.event_id}}</td>
+          <td>{{r.registrant_name}}</td>
+          <td>{{r.registrant_email}}</td>
+          <td>{{r.registrant_phone}}</td>
+          <td>{{r.tickets}}</td>
+          <td>{{r.comments}}</td>
+          <td>
+            <button (click)="editRegistration(r)">Edit</button>
+            <button (click)="deleteRegistration(r.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Add / Edit Registration</h3>
+    <form (ngSubmit)="addRegistration()">
+      <input placeholder="Event ID" [(ngModel)]="newRegistration.event_id" name="event_id" type="number" required>
+      <input placeholder="Name" [(ngModel)]="newRegistration.registrant_name" name="registrant_name" required>
+      <input placeholder="Email" [(ngModel)]="newRegistration.registrant_email" name="registrant_email" required>
+      <input placeholder="Phone" [(ngModel)]="newRegistration.registrant_phone" name="registrant_phone">
+      <input placeholder="Tickets" [(ngModel)]="newRegistration.tickets" name="tickets" type="number">
+      <input placeholder="Comments" [(ngModel)]="newRegistration.comments" name="comments">
+      <button type="submit">Save</button>
+    </form>
+  </div>
+
+</div>

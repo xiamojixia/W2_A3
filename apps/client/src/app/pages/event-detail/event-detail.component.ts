@@ -1,7 +1,39 @@
+// /src/app/pages/event-detail/event-detail.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { WeatherService, WeatherData } from '../../services/weather.service';
 import { AuthService } from '../../services/auth.service';
+
+// 天气代码翻译
+const WEATHER_DESCRIPTIONS: { [key: number]: string } = {
+  0: '☀️ Clear sky',
+  1: '🌤️ Mainly clear',
+  2: '⛅ Partly cloudy',
+  3: '☁️ Overcast',
+  45: '🌫️ Fog',
+  48: '🌫️ Rime fog',
+  51: '🌦️ Light drizzle',
+  53: '🌦️ Moderate drizzle',
+  55: '🌦️ Dense drizzle',
+  61: '🌧️ Light rain',
+  63: '🌧️ Moderate rain',
+  65: '🌧️ Heavy rain',
+  66: '🌧️ Light freezing rain',
+  67: '🌧️ Heavy freezing rain',
+  71: '🌨️ Light snow',
+  73: '🌨️ Moderate snow',
+  75: '🌨️ Heavy snow',
+  77: '🌨️ Snow grains',
+  80: '🌦️ Light rain showers',
+  81: '🌦️ Moderate rain showers',
+  82: '🌦️ Violent rain showers',
+  85: '🌨️ Light snow showers',
+  86: '🌨️ Heavy snow showers',
+  95: '⛈️ Thunderstorm',
+  96: '⛈️ Thunderstorm with light hail',
+  99: '⛈️ Thunderstorm with heavy hail'
+};
 
 interface Event {
   id: number;
@@ -14,10 +46,8 @@ interface Event {
   org_name: string;
   events_status: string;
   registration_count: number;
-  max_participants?: number;
-  end_datetime?: string;
-  created_at?: string;
-  updated_at?: string;
+  latitude: number;
+  longitude: number;
 }
 
 @Component({
@@ -28,13 +58,18 @@ interface Event {
 })
 export class EventDetailComponent implements OnInit {
   event: Event | null = null;
+  weatherData: WeatherData | null = null;
+  weatherDescription: string = '';
   isLoading: boolean = true;
+  isLoadingWeather: boolean = false;
   errorMessage: string = '';
+  weatherError: string = '';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
+    private weatherService: WeatherService,
     public authService: AuthService
   ) {}
 
@@ -45,7 +80,7 @@ export class EventDetailComponent implements OnInit {
   loadEventDetails(): void {
     const eventId = this.route.snapshot.paramMap.get('id');
     if (!eventId) {
-      this.errorMessage = 'Event ID not found';
+      this.errorMessage = '活动ID未找到';
       this.isLoading = false;
       return;
     }
@@ -54,11 +89,49 @@ export class EventDetailComponent implements OnInit {
       next: (event) => {
         this.event = event;
         this.isLoading = false;
+
+        // 加载天气数据
+        if (event.latitude && event.longitude) {
+          console.log('活动经纬度:', event.latitude, event.longitude);
+          this.loadWeatherData(event.latitude, event.longitude);
+        } else {
+          console.warn('活动缺少经纬度信息');
+          this.weatherError = '该活动暂无天气信息';
+        }
       },
       error: (error) => {
-        console.error('Error loading event details:', error);
-        this.errorMessage = 'Failed to load event details';
+        console.error('加载活动详情错误:', error);
+        this.errorMessage = '加载活动详情失败';
         this.isLoading = false;
+      }
+    });
+  }
+
+  loadWeatherData(latitude: number, longitude: number): void {
+    this.isLoadingWeather = true;
+    this.weatherError = '';
+
+    console.log('正在获取天气数据，经纬度:', latitude, longitude);
+
+    this.weatherService.getWeather(latitude, longitude).subscribe({
+      next: (data) => {
+        console.log('天气数据响应:', data);
+        this.weatherData = data;
+
+        if (data.daily && data.daily.weather_code.length > 0) {
+          const weatherCode = data.daily.weather_code[0];
+          this.weatherDescription =
+            WEATHER_DESCRIPTIONS[weatherCode] || 'Unknown weather condition';
+
+          console.log('天气代码:', weatherCode, '描述:', this.weatherDescription);
+        }
+
+        this.isLoadingWeather = false;
+      },
+      error: (error) => {
+        console.error('获取天气数据错误:', error);
+        this.weatherError = '获取天气信息失败';
+        this.isLoadingWeather = false;
       }
     });
   }
@@ -82,25 +155,18 @@ export class EventDetailComponent implements OnInit {
     this.router.navigate(['/home']);
   }
 
-  joinEvent(): void {
-    if (!this.authService.isLoggedIn()) {
-      alert('Please login to join events');
-      this.router.navigate(['/login']);
-      return;
-    }
-    if (this.event) {
-      alert(`You have joined: ${this.event.name}`);
-    }
+  joinEvent(event: Event): void {
+    console.log('🎯 加入活动:', event.name, 'ID:', event.id);
+
+    // 使用查询参数传递事件ID
+    this.router.navigate(['/login'], {
+      queryParams: { eventId: event.id }
+    });
   }
 
   donateToEvent(): void {
-    if (!this.authService.isLoggedIn()) {
-      alert('Please login to donate');
-      this.router.navigate(['/login']);
-      return;
-    }
     if (this.event) {
-      const amount = prompt(`Enter donation amount for ${this.event.name}:`, '50');
+      const amount = prompt(`Please enter the donation amount for ${this.event.name}`, '50');
       if (amount) {
         alert(`Thank you for donating $${amount} to ${this.event.name}`);
       }

@@ -44,8 +44,6 @@
         <a routerLink="/search">Search</a>
         <a routerLink="/profile">Profile</a>
         <a routerLink="/security">Security</a>
-        <a *ngIf="authService.isLoggedIn()" (click)="logout()">Logout</a>
-        <a *ngIf="!authService.isLoggedIn()" routerLink="/login">Login</a>
       </div>
     </nav>
 
@@ -98,8 +96,39 @@
             </div>
           </div>
 
+
+          <!-- 天气信息部分 -->
+          <div class="meta-item weather-info" *ngIf="weatherData || isLoadingWeather || weatherError">
+            <span class="icon">🌤️</span>
+            <div class="meta-content">
+              <strong>Weather Forecast</strong>
+
+              <!-- 加载状态 -->
+              <div *ngIf="isLoadingWeather" class="weather-loading">
+                <span>Loading weather information...</span>
+              </div>
+
+              <!-- 错误信息 -->
+              <div *ngIf="weatherError && !isLoadingWeather" class="weather-error">
+                <span>{{ weatherError }}</span>
+              </div>
+
+              <!-- 天气数据 -->
+              <div *ngIf="weatherData && !isLoadingWeather" class="weather-data">
+                <div class="weather-main">
+                  <span class="weather-description">{{ weatherDescription }}</span>
+                </div>
+                <div class="weather-temps">
+                  <span class="temp-high">H: {{ weatherData.daily.temperature_2m_max[0] }}°C</span>
+                  <span class="temp-low">L: {{ weatherData.daily.temperature_2m_min[0] }}°C</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
           <div class="event-actions">
-            <button class="btn btn-primary" (click)="joinEvent()">Join Event</button>
+            <button class="btn btn-primary" (click)="joinEvent(event)">Join Event</button>
             <button class="btn btn-secondary" (click)="donateToEvent()">Donate Now</button>
           </div>
         </div>

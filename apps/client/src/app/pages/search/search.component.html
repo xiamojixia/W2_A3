@@ -44,8 +44,6 @@
       <a routerLink="/search" class="active">Search</a>
       <a routerLink="/profile">Profile</a>
       <a routerLink="/security">Security</a>
-      <a *ngIf="authService.isLoggedIn()" (click)="logout()">Logout</a>
-      <a *ngIf="!authService.isLoggedIn()" routerLink="/login">Login</a>
     </div>
   </nav>
 

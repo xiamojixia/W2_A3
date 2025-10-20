@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { isPlatformBrowser } from '@angular/common';
 
 interface Event {
   id: number;
@@ -14,6 +15,8 @@ interface Event {
   org_name: string;
   status: string;
   registration_count: number;
+  latitude: string;
+  longitude: string;
 }
 
 interface HeartElement {
@@ -48,31 +51,45 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   private heartCount: number = 12;
   private currentHeart: number = 0;
 
+  // 用于存储事件监听器函数引用
+  private mouseMoveHandler: ((e: MouseEvent) => void) | null = null;
+  private mouseLeaveHandler: (() => void) | null = null;
+  private mouseEnterHandler: (() => void) | null = null;
+
   constructor(
     private http: HttpClient,
     public authService: AuthService,
-    private router: Router
-  ) {}
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: any
+  ) {
+    // 绑定事件处理函数
+    this.mouseMoveHandler = this.handleMouseMove.bind(this);
+    this.mouseLeaveHandler = this.handleMouseLeave.bind(this);
+    this.mouseEnterHandler = this.handleMouseEnter.bind(this);
+  }
 
   ngOnInit(): void {
     this.loadInitialData();
   }
 
   ngAfterViewInit(): void {
-    // 在视图初始化后启动爱心拖尾效果
-    setTimeout(() => {
-      this.initHeartTrail();
-    }, 1000);
+    // 只在浏览器环境中初始化爱心拖尾效果
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => {
+        this.initHeartTrail();
+      }, 1000);
+    }
   }
 
   ngOnDestroy(): void {
-    // 清理定时器
-    if (this.carouselInterval) {
-      clearInterval(this.carouselInterval);
+    // 只在浏览器环境中清理资源
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.carouselInterval) {
+        clearInterval(this.carouselInterval);
+      }
+      this.removeEventListeners();
+      this.cleanupHearts();
     }
-
-    // 清理事件监听器
-    this.removeEventListeners();
   }
 
   // 初始化爱心拖尾效果
@@ -112,18 +129,46 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     this.addMouseEventListeners();
   }
 
+  // 清理爱心元素
+  private cleanupHearts(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.hearts.forEach(heart => {
+        if (heart.element && heart.element.parentNode) {
+          heart.element.parentNode.removeChild(heart.element);
+        }
+      });
+      this.hearts = [];
+    }
+  }
+
   // 添加鼠标事件监听器
   private addMouseEventListeners(): void {
-    document.addEventListener('mousemove', this.handleMouseMove.bind(this));
-    document.addEventListener('mouseleave', this.handleMouseLeave.bind(this));
-    document.addEventListener('mouseenter', this.handleMouseEnter.bind(this));
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    if (this.mouseMoveHandler) {
+      document.addEventListener('mousemove', this.mouseMoveHandler);
+    }
+    if (this.mouseLeaveHandler) {
+      document.addEventListener('mouseleave', this.mouseLeaveHandler);
+    }
+    if (this.mouseEnterHandler) {
+      document.addEventListener('mouseenter', this.mouseEnterHandler);
+    }
   }
 
   // 移除事件监听器
   private removeEventListeners(): void {
-    document.removeEventListener('mousemove', this.handleMouseMove.bind(this));
-    document.removeEventListener('mouseleave', this.handleMouseLeave.bind(this));
-    document.removeEventListener('mouseenter', this.handleMouseEnter.bind(this));
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    if (this.mouseMoveHandler) {
+      document.removeEventListener('mousemove', this.mouseMoveHandler);
+    }
+    if (this.mouseLeaveHandler) {
+      document.removeEventListener('mouseleave', this.mouseLeaveHandler);
+    }
+    if (this.mouseEnterHandler) {
+      document.removeEventListener('mouseenter', this.mouseEnterHandler);
+    }
   }
 
   // 处理鼠标移动
@@ -165,59 +210,63 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // 加载初始数据
-loadInitialData(): void {
-  this.isLoading = true;
-  console.log('🚀 开始加载活动数据...');
+  loadInitialData(): void {
+    this.isLoading = true;
+    console.log('🚀 开始加载活动数据...');
 
-  this.http.get<Event[]>('/api/events').subscribe({
-    next: (events: Event[]) => {
-      console.log('✅ API 响应成功，原始数据:', events);
-      console.log('🔢 总活动数量:', events.length);
+    this.http.get<Event[]>('/api/events').subscribe({
+      next: (events: Event[]) => {
+        console.log('✅ API 响应成功，原始数据:', events);
+        console.log('🔢 总活动数量:', events.length);
 
-      if (events && events.length > 0) {
-        console.log('🎯 第一个活动完整信息:', events[0]);
-        console.log('🔍 活动状态字段值:', events[0].status);
-        console.log('🔍 活动状态字段类型:', typeof events[0].status);
+        if (events && events.length > 0) {
+          console.log('🎯 第一个活动完整信息:', events[0]);
+          console.log('🔍 活动状态字段值:', events[0].status);
+          console.log('🔍 活动状态字段类型:', typeof events[0].status);
+        }
+
+        // 特色活动（轮播图）
+        this.featuredEvents = events.slice(0, 4);
+        console.log('🌟 特色活动数量:', this.featuredEvents.length);
+        console.log('🌟 特色活动内容:', this.featuredEvents);
+
+        // 调试活动状态过滤
+        console.log('🔍 开始过滤活动状态...');
+        const activeEvents = events.filter(ev => {
+          const status = ev.status;
+          console.log(`活动 "${ev.name}" 的状态: "${status}"`);
+          const isActive = status === 'active';
+          console.log(`  是否活跃: ${isActive}`);
+          return isActive;
+        });
+
+        console.log('✅ 过滤后的活跃活动数量:', activeEvents.length);
+        console.log('✅ 过滤后的活跃活动内容:', activeEvents);
+
+        this.allEvents = activeEvents;
+        console.log('📋 最终 allEvents 数量:', this.allEvents.length);
+        console.log('📋 最终 allEvents 内容:', this.allEvents);
+
+        this.calculateStats(events);
+        this.isLoading = false;
+
+        // 只在浏览器环境中初始化轮播图
+        if (isPlatformBrowser(this.platformId)) {
+          setTimeout(() => this.setupCarousel(), 100);
+        }
+      },
+      error: (error) => {
+        console.error('❌ API 请求失败:', error);
+        this.errorMessage = 'Failed to load events';
+        this.isLoading = false;
       }
-
-      // 特色活动（轮播图）
-      this.featuredEvents = events.slice(0, 4);
-      console.log('🌟 特色活动数量:', this.featuredEvents.length);
-      console.log('🌟 特色活动内容:', this.featuredEvents);
-
-      // 调试活动状态过滤
-      console.log('🔍 开始过滤活动状态...');
-      const activeEvents = events.filter(ev => {
-        const status = ev.status;
-        console.log(`活动 "${ev.name}" 的状态: "${status}"`);
-        const isActive = status === 'active';
-        console.log(`  是否活跃: ${isActive}`);
-        return isActive;
-      });
-
-      console.log('✅ 过滤后的活跃活动数量:', activeEvents.length);
-      console.log('✅ 过滤后的活跃活动内容:', activeEvents);
-
-      this.allEvents = activeEvents;
-      console.log('📋 最终 allEvents 数量:', this.allEvents.length);
-      console.log('📋 最终 allEvents 内容:', this.allEvents);
-
-      this.calculateStats(events);
-      this.isLoading = false;
-
-      // 初始化轮播图
-      setTimeout(() => this.setupCarousel(), 100);
-    },
-    error: (error) => {
-      console.error('❌ API 请求失败:', error);
-      this.errorMessage = 'Failed to load events';
-      this.isLoading = false;
-    }
-  });
-}
+    });
+  }
 
   // 设置轮播图
   setupCarousel(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     const track = document.getElementById('carousel-track');
     if (!track) return;
 
@@ -259,6 +308,8 @@ loadInitialData(): void {
 
   // 开始轮播
   startCarousel(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     this.carouselInterval = setInterval(() => {
       const slides = document.querySelectorAll('.carousel-slide');
       if (slides.length === 0) return;
@@ -271,6 +322,8 @@ loadInitialData(): void {
 
   // 手动切换到指定幻灯片
   goToSlide(index: number): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     const slides = document.querySelectorAll('.carousel-slide');
     if (slides.length === 0) return;
 
@@ -297,10 +350,9 @@ loadInitialData(): void {
   }
 
   // 查看活动详情
-viewEventDetails(event: Event): void {
-  this.router.navigate(['/event', event.id]);
-}
-
+  viewEventDetails(event: Event): void {
+    this.router.navigate(['/event', event.id]);
+  }
 
   // 登出
   logout(): void {

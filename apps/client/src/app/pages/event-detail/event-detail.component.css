@@ -519,3 +519,62 @@
     transform: translate(-50%, -50%) scale(1.2);
   }
 }
+
+
+
+
+/* 天气信息样式 */
+.weather-info {
+  background: rgba(212, 175, 55, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.weather-data {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.weather-main {
+  font-weight: 600;
+  color: #d4af37;
+}
+
+.weather-temps {
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.temp-high {
+  color: #ff6b6b;
+}
+
+.temp-low {
+  color: #4dabf7;
+}
+
+.weather-loading {
+  color: #b0b0b0;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.weather-error {
+  color: #ff6b6b;
+  font-size: 14px;
+}
+
+/* 坐标信息样式 */
+.meta-item .meta-content strong {
+  color: #d4af37;
+  font-size: 14px;
+}
+
+.meta-item .meta-content span {
+  color: #ffffff;
+  font-size: 16px;
+}

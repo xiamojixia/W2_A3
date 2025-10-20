@@ -1,12 +1,30 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service'; // 导入 AuthService
+import { Router, ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-interface ValidationResult {
-  nameExists: boolean;
-  emailExists: boolean;
-  phoneExists: boolean;
+interface Event {
+  id: number;
+  name: string;
+  description: string;
+  start_datetime: string;
+  location: string;
+  image_url?: string;
+  category_name: string;
+  org_name: string;
+  status: string;
+  registration_count: number;
+  ticket_price: number;
+}
+
+interface RegistrationData {
+  event_id: number;
+  registrant_name: string;
+  registrant_email: string;
+  registrant_phone: string;
+  tickets: number;
+  registered_at: string;
+  comments?: string;
 }
 
 @Component({
@@ -15,200 +33,297 @@ interface ValidationResult {
   standalone: false,
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private apiBaseUrl = '/api';
 
-  // 用户填写的信息
-  registrant_name = '';
-  registrant_email = '';
-  registrant_phone = '';
+  registrationForm: FormGroup;
+  currentEvent: Event | null = null;
+  eventId: string | null = null;
 
-  // 验证码相关
-  verificationCode = '';
-  confirmCode = '';
-
-  // 状态控制
-  errorMessage = '';
   isLoading = false;
-  showVerificationModal = false;
-  validationResult: ValidationResult = {
-    nameExists: false,
-    emailExists: false,
-    phoneExists: false
-  };
+  isSubmitted = false;
+  showSuccessModal = false;
+
+  // Verification code related properties
+  verificationCode: string = '';
+  userEnteredCode: string = '';
+  showVerificationModal: boolean = false;
+  isVerificationSent: boolean = false;
+  canResendVerification: boolean = true;
+  countdown: number = 0;
+  countdownInterval: any;
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private authService: AuthService // 注入 AuthService
-  ) {}
-
-  ngOnInit(): void {
-    this.testBackendConnection();
+    private route: ActivatedRoute,
+    private fb: FormBuilder
+  ) {
+    this.registrationForm = this.createForm();
   }
 
-  testBackendConnection(): void {
-    this.http.get(`${this.apiBaseUrl}/health`).subscribe({
-      next: (response) => console.log('✅ 后端连接正常:', response),
-      error: (error) => console.error('❌ 后端连接失败:', error)
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.eventId = params['eventId'];
+      console.log('Current Event ID:', this.eventId);
+
+      if (this.eventId) {
+        this.loadEventDetails(this.eventId);
+      }
     });
   }
 
-  // 实时检查信息是否重复
-  checkInfo(): void {
-    if (this.registrant_name && this.registrant_email && this.registrant_phone) {
-      console.log("调用了检查信息");
-
-      this.http.post<{success: boolean, data: ValidationResult}>(
-        `/api/registrations/check-info`,
-        {
-          registrant_name: this.registrant_name,
-          registrant_email: this.registrant_email,
-          registrant_phone: this.registrant_phone
-        }
-      ).subscribe({
-        next: (response) => {
-          console.log('检查信息响应:', response);
-          if (response.success) {
-            this.validationResult = response.data;
-          }
-        },
-        error: (error) => {
-          console.error('检查信息错误:', error);
-          this.errorMessage = '检查信息失败，请重试';
-        }
-      });
-    }
+  createForm(): FormGroup {
+    return this.fb.group({
+      registrant_name: ['', [Validators.required, Validators.minLength(2)]],
+      registrant_email: ['', [Validators.required, Validators.email]],
+      registrant_phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10,11}$/)]],
+      tickets: [1, [Validators.required, Validators.min(1), Validators.max(10)]],
+      registered_at: [this.getCurrentDate(), Validators.required],
+      comments: [''],
+      verification_code: ['', [Validators.required, Validators.pattern(/^\d{4}$/)]]
+    });
   }
 
-  // 获取验证码
+  getCurrentDate(): string {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  loadEventDetails(eventId: string): void {
+    this.isLoading = true;
+    this.http.get<Event>(`${this.apiBaseUrl}/events/${eventId}`).subscribe({
+      next: (event) => {
+        this.currentEvent = event;
+        this.isLoading = false;
+        console.log('Event details loaded successfully:', event);
+      },
+      error: (error) => {
+        console.error('Failed to load event details:', error);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  get formControls() {
+    return this.registrationForm.controls;
+  }
+
+  getTotalAmount(): number {
+    const quantity = this.registrationForm.get('tickets')?.value || 1;
+    const price = this.currentEvent?.ticket_price || 0;
+    return quantity * price;
+  }
+
+  // Check if basic information is complete (for verification code button status)
+  isBasicInfoValid(): boolean {
+    const name = this.registrationForm.get('registrant_name')?.value;
+    const email = this.registrationForm.get('registrant_email')?.value;
+    const phone = this.registrationForm.get('registrant_phone')?.value;
+
+    return !!name && !!email && !!phone &&
+           this.formControls['registrant_name'].valid &&
+           this.formControls['registrant_email'].valid &&
+           this.formControls['registrant_phone'].valid;
+  }
+
+  // Generate verification code
+  generateVerificationCode(): string {
+    return Math.floor(1000 + Math.random() * 9000).toString();
+  }
+
+  // Get verification code
   getVerificationCode(): void {
-    if (!this.isInfoValid()) {
-      this.errorMessage = '请先填写正确的信息';
+    if (!this.isBasicInfoValid()) {
+      alert('Please fill in complete and correct name, email, and phone information first');
       return;
     }
 
-    // 生成4位随机验证码
-    this.verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
-
-    // 显示弹窗
+    // Generate 4-digit random verification code
+    this.verificationCode = this.generateVerificationCode();
+    this.isVerificationSent = true;
     this.showVerificationModal = true;
-    this.errorMessage = '';
+    this.canResendVerification = false;
+
+    // Set 60-second countdown
+    this.countdown = 60;
+    this.countdownInterval = setInterval(() => {
+      this.countdown--;
+      if (this.countdown <= 0) {
+        clearInterval(this.countdownInterval);
+        this.canResendVerification = true;
+      }
+    }, 1000);
+
+    console.log('Generated verification code:', this.verificationCode);
   }
 
-  // 检查信息是否有效（都不重复）
-  isInfoValid(): boolean {
-    return !this.validationResult.nameExists &&
-           !this.validationResult.emailExists &&
-           !this.validationResult.phoneExists &&
-           !!this.registrant_name &&
-           !!this.registrant_email &&
-           !!this.registrant_phone;
+  // Resend verification code
+  resendVerificationCode(): void {
+    if (this.canResendVerification) {
+      this.getVerificationCode();
+    }
   }
 
-  // 提交注册 - 关键修改部分
+  // Close verification code popup
+  closeVerificationModal(): void {
+    this.showVerificationModal = false;
+  }
+
+  // Verify code
+  verifyCode(): void {
+    const enteredCode = this.registrationForm.get('verification_code')?.value;
+
+    if (!enteredCode) {
+      alert('Please enter verification code');
+      return;
+    }
+
+    if (enteredCode !== this.verificationCode) {
+      alert('Verification code error, please re-enter');
+      this.registrationForm.get('verification_code')?.setValue('');
+      return;
+    }
+
+    // Verification code correct, close popup
+    this.showVerificationModal = false;
+    alert('Verification successful! You can now submit your registration.');
+  }
+
   onSubmit(): void {
-    if (!this.registrant_name || !this.registrant_email || !this.registrant_phone) {
-      this.errorMessage = '请填写完整信息';
+    this.isSubmitted = true;
+
+    // Check if form is valid
+    if (this.registrationForm.invalid || !this.currentEvent) {
+      this.markFormGroupTouched();
       return;
     }
 
-    if (!this.confirmCode) {
-      this.errorMessage = '请输入验证码';
+    // Check if verification code is correct
+    const enteredCode = this.registrationForm.get('verification_code')?.value;
+    if (!this.isVerificationSent) {
+      alert('Please get verification code first');
       return;
     }
 
-    if (this.confirmCode !== this.verificationCode) {
-      this.errorMessage = '验证码错误';
+    if (enteredCode !== this.verificationCode) {
+      alert('Verification code error, please re-enter');
+      this.registrationForm.get('verification_code')?.setValue('');
       return;
     }
 
     this.isLoading = true;
-    this.errorMessage = '';
 
-    console.log('发送注册请求到:', `${this.apiBaseUrl}/registrations/register-with-verification`);
+    const formData: RegistrationData = {
+      event_id: this.currentEvent.id,
+      registrant_name: this.registrationForm.value.registrant_name,
+      registrant_email: this.registrationForm.value.registrant_email,
+      registrant_phone: this.registrationForm.value.registrant_phone,
+      tickets: this.registrationForm.value.tickets,
+      registered_at: this.registrationForm.value.registered_at,
+      comments: this.registrationForm.value.comments
+    };
 
-    this.http.post(
-      `${this.apiBaseUrl}/registrations/register-with-verification`,
-      {
-        registrant_name: this.registrant_name,
-        registrant_email: this.registrant_email,
-        registrant_phone: this.registrant_phone,
-        verificationCode: this.verificationCode,
-        confirmCode: this.confirmCode
-      }
-    ).subscribe({
+    console.log('Submitted registration data:', formData);
+
+    this.http.post(`${this.apiBaseUrl}/registrations`, formData).subscribe({
       next: (response: any) => {
         this.isLoading = false;
-        console.log('✅ 注册成功响应:', response);
+        console.log('Registration API response:', response);
 
-        if (response.success) {
-          alert('注册成功！');
-
-          // 🔥 关键修改：注册成功后自动登录
-          this.autoLoginAfterRegistration();
-
+        // Judge success based on actual API response format
+        if (response && response.id) {
+          console.log('✅ Registration successful, registration ID:', response.id);
+          this.handleSuccess();
+        } else if (response && response.success) {
+          console.log('✅ Registration successful (success field)');
+          this.handleSuccess();
+        } else if (response && response.registrant_name) {
+          console.log('✅ Registration successful (registrant_name field)');
+          this.handleSuccess();
         } else {
-          this.errorMessage = response.message || '注册失败';
+          console.warn('❌ Registration response format abnormal:', response);
+          alert('Registration failed: Server response format abnormal');
         }
       },
       error: (error) => {
         this.isLoading = false;
-        console.error('❌ 注册错误详情:', error);
+        console.error('Registration request error:', error);
         this.handleRegistrationError(error);
       }
     });
   }
 
-  // 注册成功后自动登录
-  private autoLoginAfterRegistration(): void {
-    // 使用注册信息自动登录
-    // 注意：这里使用 registrant_name 作为用户名，你可以根据需要调整
-    const loginSuccess = this.authService.login(this.registrant_name, 'temporary-password');
-
-    if (loginSuccess) {
-      console.log('✅ 自动登录成功');
-      console.log('✅ 当前登录状态:', this.authService.isLoggedIn());
-      console.log('✅ 当前用户:', this.authService.getCurrentUser());
-
-      // 跳转到 home 页面
-      this.router.navigate(['/home']).then(navigated => {
-        if (navigated) {
-          console.log('✅ 成功跳转到 home 页面');
-        } else {
-          console.error('❌ 跳转失败');
-          this.errorMessage = '跳转失败，请手动刷新页面';
-        }
-      });
-    } else {
-      console.error('❌ 自动登录失败');
-      this.errorMessage = '自动登录失败，请手动登录';
-      // 如果自动登录失败，跳转到登录页
-      this.router.navigate(['/login']);
-    }
+  private markFormGroupTouched(): void {
+    Object.keys(this.formControls).forEach(key => {
+      this.formControls[key].markAsTouched();
+    });
   }
 
-  // 错误处理方法
   private handleRegistrationError(error: any): void {
-    if (error.error instanceof ErrorEvent) {
-      this.errorMessage = '网络错误，请检查连接';
-    } else if (error.status === 200 && error.error && typeof error.error === 'string') {
-      this.errorMessage = '服务器返回了错误格式的响应';
+    let errorMessage = 'Registration failed, please try again';
+
+    if (typeof error === 'string') {
+      errorMessage = error;
     } else if (error.status === 400) {
-      this.errorMessage = error.error?.message || '请求数据格式错误';
+      errorMessage = 'Request data format error, please check input information';
     } else if (error.status === 500) {
-      this.errorMessage = '服务器内部错误，请联系管理员';
+      errorMessage = 'Server internal error, please contact administrator';
     } else if (error.status === 0) {
-      this.errorMessage = '无法连接到服务器，请确保后端正在运行';
-    } else if (error.status === 404) {
-      this.errorMessage = 'API接口不存在，请检查URL';
-    } else {
-      this.errorMessage = error.error?.message || '注册失败，请重试';
+      errorMessage = 'Unable to connect to server, please check network connection';
+    } else if (error.error?.message) {
+      errorMessage = error.error.message;
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+
+    alert(errorMessage);
+  }
+
+  private handleSuccess(): void {
+    this.showSuccessModal = true;
+    // Reset all states
+    this.registrationForm.reset({
+      tickets: 1,
+      registered_at: this.getCurrentDate(),
+      comments: ''
+    });
+    this.isSubmitted = false;
+    this.isVerificationSent = false;
+    this.verificationCode = '';
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
     }
   }
 
-  // 关闭验证码弹窗
-  closeModal(): void {
-    this.showVerificationModal = false;
+  closeSuccessModal(): void {
+    this.showSuccessModal = false;
+    this.router.navigate(['/home']);
+  }
+
+  navigateToHome(): void {
+    this.router.navigate(['/home']);
+  }
+
+  formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long'
+    });
+  }
+
+  formatTime(dateString: string): string {
+    return new Date(dateString).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  // Clean up timer when component is destroyed
+  ngOnDestroy(): void {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
   }
 }

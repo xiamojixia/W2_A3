@@ -29,16 +29,14 @@
       <a routerLink="/search">Search</a>
       <a routerLink="/profile" class="active">Profile</a>
       <a routerLink="/security">Security</a>
-      <a *ngIf="authService.isLoggedIn()" (click)="logout()">Logout</a>
-      <a *ngIf="!authService.isLoggedIn()" routerLink="/login">Login</a>
     </div>
   </nav>
 
   <!-- 个人资料内容 -->
   <div class="profile-content">
     <div class="profile-header">
-      <h1 class="profile-title">个人资料</h1>
-      <p class="profile-subtitle">管理您的个人信息和账户设置</p>
+      <h1 class="profile-title">Profile</h1>
+      <p class="profile-subtitle">Manage your personal information and account settings</p>
     </div>
 
     <div class="profile-card">
@@ -47,7 +45,7 @@
         <div class="avatar-container">
           <img [src]="userProfile.avatar" [alt]="userProfile.username" class="avatar-image">
           <div class="avatar-overlay">
-            <span class="avatar-text">更换头像</span>
+            <span class="avatar-text">Change Avatar</span>
           </div>
         </div>
         <h2 class="username">{{ userProfile.username }}</h2>
@@ -57,17 +55,17 @@
       <!-- 个人信息 -->
       <div class="info-section">
         <div class="section-header">
-          <h3>基本信息</h3>
+          <h3>Basic Information</h3>
           <button
             *ngIf="!isEditing"
             class="btn-edit"
             (click)="toggleEdit()"
           >
-            ✏️ 编辑信息
+            ✏️ Edit Profile
           </button>
           <div *ngIf="isEditing" class="edit-actions">
-            <button class="btn-save" (click)="saveProfile()">💾 保存</button>
-            <button class="btn-cancel" (click)="cancelEdit()">❌ 取消</button>
+            <button class="btn-save" (click)="saveProfile()">💾 Save</button>
+            <button class="btn-cancel" (click)="cancelEdit()">❌ Cancel</button>
           </div>
         </div>
 
@@ -75,23 +73,23 @@
           <!-- 查看模式 -->
           <div *ngIf="!isEditing" class="info-items">
             <div class="info-item">
-              <span class="info-label">👤 用户名</span>
+              <span class="info-label">👤 Username</span>
               <span class="info-value">{{ userProfile.username }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">📧 邮箱地址</span>
+              <span class="info-label">📧 Email</span>
               <span class="info-value">{{ userProfile.email }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">📞 手机号码</span>
+              <span class="info-label">📞 Phone</span>
               <span class="info-value">{{ userProfile.phone }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">📅 注册时间</span>
+              <span class="info-label">📅 Registration Date</span>
               <span class="info-value">{{ userProfile.registrationDate }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">📝 个人简介</span>
+              <span class="info-label">📝 Bio</span>
               <span class="info-value">{{ userProfile.bio }}</span>
             </div>
           </div>
@@ -99,7 +97,7 @@
           <!-- 编辑模式 -->
           <div *ngIf="isEditing" class="edit-form">
             <div class="form-group">
-              <label for="username">用户名</label>
+              <label for="username">Username</label>
               <input
                 type="text"
                 id="username"
@@ -108,7 +106,7 @@
               >
             </div>
             <div class="form-group">
-              <label for="email">邮箱地址</label>
+              <label for="email">Email</label>
               <input
                 type="email"
                 id="email"
@@ -117,7 +115,7 @@
               >
             </div>
             <div class="form-group">
-              <label for="phone">手机号码</label>
+              <label for="phone">Phone</label>
               <input
                 type="tel"
                 id="phone"
@@ -126,7 +124,7 @@
               >
             </div>
             <div class="form-group">
-              <label for="bio">个人简介</label>
+              <label for="bio">Bio</label>
               <textarea
                 id="bio"
                 [(ngModel)]="editedProfile.bio"
@@ -140,34 +138,34 @@
 
       <!-- 统计信息 -->
       <div class="stats-section">
-        <h3>活动统计</h3>
+        <h3>Activity Statistics</h3>
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-icon">🎯</div>
             <div class="stat-content">
               <div class="stat-number">12</div>
-              <div class="stat-label">参与的活动</div>
+              <div class="stat-label">Events Joined</div>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">❤️</div>
             <div class="stat-content">
               <div class="stat-number">8</div>
-              <div class="stat-label">捐赠次数</div>
+              <div class="stat-label">Donations Made</div>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">⭐</div>
             <div class="stat-content">
               <div class="stat-number">15</div>
-              <div class="stat-label">志愿者小时</div>
+              <div class="stat-label">Volunteer Hours</div>
             </div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">🏆</div>
             <div class="stat-content">
               <div class="stat-number">3</div>
-              <div class="stat-label">获得的徽章</div>
+              <div class="stat-label">Badges Earned</div>
             </div>
           </div>
         </div>

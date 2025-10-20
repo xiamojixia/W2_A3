@@ -13,12 +13,14 @@ const eventsRoutes = require("./src/routes/events");
 const categoriesRoutes = require("./src/routes/categories");
 const searchRoutes = require("./src/routes/search");
 const registrationsRoutes = require("./src/routes/registrations");  // 关键修复
+const weatherRoutes = require('./src/routes/weather');
 
 // 使用路由
 app.use("/api/events", eventsRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/registrations", registrationsRoutes);  // 关键修复：使用 registrationsRoutes
+app.use('/api/weather', weatherRoutes);
 
 // 管理员路由
 app.use("/api/admin/events", require("./src/routes/admin/events"));

@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../src/environments/environment';
 
 export interface WeatherData {
   latitude: number;
@@ -29,11 +30,18 @@ export interface WeatherData {
   providedIn: 'root'
 })
 export class WeatherService {
-  private apiUrl = '/api/weather';
+  apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
   getWeather(latitude: number, longitude: number): Observable<WeatherData> {
-    return this.http.get<WeatherData>(`${this.apiUrl}/${latitude}/${longitude}`);
+    console.log(`Fetching weather data for lat: ${latitude}, lon: ${longitude}`);
+    console.log(`Fetching weather data for lat: ${latitude}, lon: ${longitude}`);
+    console.log(`Fetching weather data for lat: ${latitude}, lon: ${longitude}`);
+    console.log(`Fetching weather data for lat: ${latitude}, lon: ${longitude}`);
+    console.log(`Fetching weather data for lat: ${latitude}, lon: ${longitude}`);
+    console.log(`Fetching weather data for lat: ${latitude}, lon: ${longitude}`);
+    console.log(`Fetching weather data for lat: ${latitude}, lon: ${longitude}`);
+    return this.http.get<WeatherData>(`${this.apiUrl}${latitude}/${longitude}`);
   }
 }

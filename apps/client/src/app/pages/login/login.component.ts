@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import { environment } from '../../../../src/environments/environment';
 interface Event {
   id: number;
   name: string;
@@ -34,7 +34,8 @@ interface RegistrationData {
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  private apiBaseUrl = '/api';
+  apiUrl = environment.apiUrl;
+  private apiBaseUrl = `${this.apiUrl}`;
 
   registrationForm: FormGroup;
   currentEvent: Event | null = null;

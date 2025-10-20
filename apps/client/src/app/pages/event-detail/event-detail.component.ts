@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { WeatherService, WeatherData } from '../../services/weather.service';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../../src/environments/environment';
 
 // 天气代码翻译
 const WEATHER_DESCRIPTIONS: { [key: number]: string } = {
@@ -57,6 +58,7 @@ interface Event {
   styleUrls: ['./event-detail.component.css']
 })
 export class EventDetailComponent implements OnInit {
+  apiUrl = environment.apiUrl;
   event: Event | null = null;
   weatherData: WeatherData | null = null;
   weatherDescription: string = '';
@@ -78,14 +80,16 @@ export class EventDetailComponent implements OnInit {
   }
 
   loadEventDetails(): void {
+
     const eventId = this.route.snapshot.paramMap.get('id');
     if (!eventId) {
       this.errorMessage = '活动ID未找到';
       this.isLoading = false;
       return;
     }
+    const fullApiUrl = `${this.apiUrl}/events/${eventId}`;
 
-    this.http.get<Event>(`/api/events/${eventId}`).subscribe({
+    this.http.get<Event>(fullApiUrl).subscribe({
       next: (event) => {
         this.event = event;
         this.isLoading = false;
@@ -112,7 +116,16 @@ export class EventDetailComponent implements OnInit {
     this.weatherError = '';
 
     console.log('正在获取天气数据，经纬度:', latitude, longitude);
-
+    console.log('正在获取天气数据，经纬度1:', latitude, longitude);
+    console.log('正在获取天气数据，经纬度1:', latitude, longitude);
+    console.log('正在获取天气数据，经纬度1:', latitude, longitude);
+    console.log('正在获取天气数据，经纬度1:', latitude, longitude);
+    console.log('正在获取天气数据，经纬度1:', latitude, longitude);
+    console.log('正在获取天气数据，经纬度1:', latitude, longitude);
+    console.log('正在获取天气数据，经纬度1:', latitude, longitude);
+    console.log('正在获取天气数据，经纬度1:', latitude, longitude);
+    console.log('正在获取天气数据，经纬度1:', latitude, longitude);
+    console.log('正在获取天气数据，经纬度1:', latitude, longitude);
     this.weatherService.getWeather(latitude, longitude).subscribe({
       next: (data) => {
         console.log('天气数据响应:', data);

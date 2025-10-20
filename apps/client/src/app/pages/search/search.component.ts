@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
-
+import { environment } from '../../../../src/environments/environment';
 interface Event {
   id: number;
   name: string;
@@ -34,6 +34,7 @@ interface HeartElement {
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
+  apiUrl = environment.apiUrl;
   categories: Category[] = [];
   searchResults: Event[] = [];
 
@@ -85,7 +86,8 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // 加载分类数据
   loadCategories(): void {
-    this.http.get<Category[]>('/api/categories').subscribe({
+    console.log(`${this.apiUrl}`)
+    this.http.get<Category[]>(`${this.apiUrl}/categories`).subscribe({
       next: (categories) => {
         this.categories = categories;
       },
@@ -107,7 +109,7 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
     this.hasSearched = true;
     this.errorMessage = '';
 
-    let url = '/api/search?';
+    let url = `${this.apiUrl}/search?`;
     const params: string[] = [];
 
     if (this.startDate) {

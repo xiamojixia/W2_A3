@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { isPlatformBrowser } from '@angular/common';
+import { environment } from '../../../../src/environments/environment';
 
 interface Event {
   id: number;
@@ -32,6 +33,7 @@ interface HeartElement {
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
+  apiUrl = environment.apiUrl;
   featuredEvents: Event[] = [];
   allEvents: Event[] = [];
 
@@ -213,8 +215,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   loadInitialData(): void {
     this.isLoading = true;
     console.log('🚀 开始加载活动数据...');
-
-    this.http.get<Event[]>('/api/events').subscribe({
+    console.log(`🌐 使用的 API URL: ${this.apiUrl}`);
+    this.http.get<Event[]>(`${this.apiUrl}/events`).subscribe({
       next: (events: Event[]) => {
         console.log('✅ API 响应成功，原始数据:', events);
         console.log('🔢 总活动数量:', events.length);

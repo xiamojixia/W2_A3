@@ -1,43 +1,106 @@
 <div class="login-container">
   <div class="login-card">
-    <h2>用户登录</h2>
+    <h2>用户注册</h2>
+
     <form (ngSubmit)="onSubmit()">
+      <!-- 姓名输入 -->
       <div class="form-group">
-        <label for="username">用户名</label>
+        <label for="name">姓名</label>
         <input
           type="text"
-          id="username"
-          [(ngModel)]="username"
-          name="username"
+          id="name"
+          [(ngModel)]="registrant_name"
+          name="name"
           required
-          placeholder="请输入用户名">
+          (input)="checkInfo()"
+          placeholder="请输入姓名">
+        <div *ngIf="registrant_name" class="validation-message"
+             [class.valid]="!validationResult.nameExists"
+             [class.invalid]="validationResult.nameExists">
+          {{ validationResult.nameExists ? '⚠️ 该姓名已被注册' : '✅ 姓名可用' }}
+        </div>
       </div>
 
+      <!-- 邮箱输入 -->
       <div class="form-group">
-        <label for="password">密码</label>
+        <label for="email">邮箱</label>
         <input
-          type="password"
-          id="password"
-          [(ngModel)]="password"
-          name="password"
+          type="email"
+          id="email"
+          [(ngModel)]="registrant_email"
+          name="email"
           required
-          placeholder="请输入密码">
+          (input)="checkInfo()"
+          placeholder="请输入邮箱">
+        <div *ngIf="registrant_email" class="validation-message"
+             [class.valid]="!validationResult.emailExists"
+             [class.invalid]="validationResult.emailExists">
+          {{ validationResult.emailExists ? '⚠️ 该邮箱已被注册' : '✅ 邮箱可用' }}
+        </div>
       </div>
 
+      <!-- 电话输入 -->
+      <div class="form-group">
+        <label for="phone">电话</label>
+        <input
+          type="tel"
+          id="phone"
+          [(ngModel)]="registrant_phone"
+          name="phone"
+          required
+          (input)="checkInfo()"
+          placeholder="请输入电话">
+        <div *ngIf="registrant_phone" class="validation-message"
+             [class.valid]="!validationResult.phoneExists"
+             [class.invalid]="validationResult.phoneExists">
+          {{ validationResult.phoneExists ? '⚠️ 该电话已被注册' : '✅ 电话可用' }}
+        </div>
+      </div>
+
+      <!-- 获取验证码按钮 -->
       <button
-        type="submit"
-        class="login-btn"
-        [disabled]="isLoading">
-        {{ isLoading ? '登录中...' : '登录' }}
+        type="button"
+        class="verification-btn"
+        (click)="getVerificationCode()"
+        [disabled]="!isInfoValid()">
+        获取验证码
       </button>
 
+      <!-- 验证码输入 -->
+      <div class="form-group" *ngIf="verificationCode">
+        <label for="confirmCode">验证码</label>
+        <input
+          type="text"
+          id="confirmCode"
+          [(ngModel)]="confirmCode"
+          name="confirmCode"
+          required
+          maxlength="4"
+          placeholder="请输入验证码">
+      </div>
+
+      <!-- 提交按钮 -->
+      <button
+        type="submit"
+        class="register-btn"
+        [disabled]="isLoading">
+        {{ isLoading ? '注册中...' : '注册' }}
+      </button>
+
+      <!-- 错误信息 -->
       <div *ngIf="errorMessage" class="error-message">
         {{ errorMessage }}
       </div>
     </form>
+  </div>
 
-    <div class="demo-credentials">
-      <p>演示账号：任意用户名和密码</p>
+  <!-- 验证码弹窗 -->
+  <div *ngIf="showVerificationModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>验证码</h3>
+      <p>可以注册，您的验证码为：<strong>{{ verificationCode }}</strong></p>
+      <p>请在下方输入此验证码完成注册</p>
+      <button (click)="closeModal()" class="close-btn">确定</button>
     </div>
   </div>
 </div>

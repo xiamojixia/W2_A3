@@ -8,6 +8,7 @@ import { HomeComponent } from '../app/pages/home/home.component';
 import { SearchComponent } from '../app/pages/search/search.component';
 import { ProfileComponent } from '../app/pages/profile/profile.component';
 import { SecurityComponent } from '../app/pages/security/security.component';
+import { EventDetailComponent } from './pages/event-detail/event-detail.component';
 
 const routes: Routes = [
   // 默认路由重定向到主页
@@ -27,6 +28,9 @@ const routes: Routes = [
 
   // 安全页（需要认证）
   { path: 'security', component: SecurityComponent, canActivate: [AuthGuard] },
+
+  // 安全页（需要认证）
+  { path: 'event/:id', component: EventDetailComponent, canActivate: [AuthGuard] },
 
   // 通配符路由（404页面）
   { path: '**', redirectTo: '/home' }

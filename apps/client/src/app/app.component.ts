@@ -5,7 +5,6 @@ import { AuthService } from './services/auth.service';
   selector: 'app-root',
   standalone: false,
   template: `
-    <app-navigation *ngIf="authService.isLoggedIn()"></app-navigation>
     <main [class.logged-out]="!authService.isLoggedIn()">
       <router-outlet></router-outlet>
     </main>

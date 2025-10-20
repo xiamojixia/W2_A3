@@ -1,0 +1,248 @@
+<!-- 和平鸽飘落效果 -->
+<div class="dove-fall">
+    <div class="dove small">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove medium">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove large">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+</div>
+
+<!-- 爱心拖尾效果容器 -->
+<div class="trail-container" id="trailContainer"></div>
+
+<div class="profile-container">
+  <!-- 导航栏 -->
+  <nav class="profile-nav">
+    <div class="site-title">Charity Events</div>
+    <div class="nav-links">
+      <a routerLink="/home">Home</a>
+      <a routerLink="/search">Search</a>
+      <a routerLink="/profile" class="active">Profile</a>
+      <a routerLink="/security">Security</a>
+      <a *ngIf="authService.isLoggedIn()" (click)="logout()">Logout</a>
+      <a *ngIf="!authService.isLoggedIn()" routerLink="/login">Login</a>
+    </div>
+  </nav>
+
+  <!-- 个人资料内容 -->
+  <div class="profile-content">
+    <div class="profile-header">
+      <h1 class="profile-title">个人资料</h1>
+      <p class="profile-subtitle">管理您的个人信息和账户设置</p>
+    </div>
+
+    <div class="profile-card">
+      <!-- 头像区域 -->
+      <div class="avatar-section">
+        <div class="avatar-container">
+          <img [src]="userProfile.avatar" [alt]="userProfile.username" class="avatar-image">
+          <div class="avatar-overlay">
+            <span class="avatar-text">更换头像</span>
+          </div>
+        </div>
+        <h2 class="username">{{ userProfile.username }}</h2>
+        <p class="user-bio">{{ userProfile.bio }}</p>
+      </div>
+
+      <!-- 个人信息 -->
+      <div class="info-section">
+        <div class="section-header">
+          <h3>基本信息</h3>
+          <button
+            *ngIf="!isEditing"
+            class="btn-edit"
+            (click)="toggleEdit()"
+          >
+            ✏️ 编辑信息
+          </button>
+          <div *ngIf="isEditing" class="edit-actions">
+            <button class="btn-save" (click)="saveProfile()">💾 保存</button>
+            <button class="btn-cancel" (click)="cancelEdit()">❌ 取消</button>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <!-- 查看模式 -->
+          <div *ngIf="!isEditing" class="info-items">
+            <div class="info-item">
+              <span class="info-label">👤 用户名</span>
+              <span class="info-value">{{ userProfile.username }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">📧 邮箱地址</span>
+              <span class="info-value">{{ userProfile.email }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">📞 手机号码</span>
+              <span class="info-value">{{ userProfile.phone }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">📅 注册时间</span>
+              <span class="info-value">{{ userProfile.registrationDate }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">📝 个人简介</span>
+              <span class="info-value">{{ userProfile.bio }}</span>
+            </div>
+          </div>
+
+          <!-- 编辑模式 -->
+          <div *ngIf="isEditing" class="edit-form">
+            <div class="form-group">
+              <label for="username">用户名</label>
+              <input
+                type="text"
+                id="username"
+                [(ngModel)]="editedProfile.username"
+                class="form-input"
+              >
+            </div>
+            <div class="form-group">
+              <label for="email">邮箱地址</label>
+              <input
+                type="email"
+                id="email"
+                [(ngModel)]="editedProfile.email"
+                class="form-input"
+              >
+            </div>
+            <div class="form-group">
+              <label for="phone">手机号码</label>
+              <input
+                type="tel"
+                id="phone"
+                [(ngModel)]="editedProfile.phone"
+                class="form-input"
+              >
+            </div>
+            <div class="form-group">
+              <label for="bio">个人简介</label>
+              <textarea
+                id="bio"
+                [(ngModel)]="editedProfile.bio"
+                class="form-textarea"
+                rows="4"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 统计信息 -->
+      <div class="stats-section">
+        <h3>活动统计</h3>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-content">
+              <div class="stat-number">12</div>
+              <div class="stat-label">参与的活动</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">❤️</div>
+            <div class="stat-content">
+              <div class="stat-number">8</div>
+              <div class="stat-label">捐赠次数</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-content">
+              <div class="stat-number">15</div>
+              <div class="stat-label">志愿者小时</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-content">
+              <div class="stat-number">3</div>
+              <div class="stat-label">获得的徽章</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 平台信息页脚 -->
+  <footer class="platform-footer">
+    <div class="footer-container">
+      <div class="footer-sections">
+        <!-- About Us -->
+        <div class="footer-section">
+          <h4>About Us</h4>
+          <ul>
+            <li><a href="#">Platform Introduction</a></li>
+            <li><a href="#">Co-founders</a></li>
+            <li><a href="#">Board of Directors</a></li>
+            <li><a href="#">Scientific Advisory Committee</a></li>
+            <li><a href="#">Executive Team</a></li>
+            <li><a href="#">Milestones</a></li>
+            <li><a href="#">Annual Reports</a></li>
+          </ul>
+        </div>
+
+        <!-- Join Us -->
+        <div class="footer-section">
+          <h4>Join Us</h4>
+          <ul>
+            <li><a href="#">Project Collaboration</a></li>
+          </ul>
+          <h4 class="footer-subtitle">Project Funding</h4>
+          <ul>
+            <li><a href="#">Science Innovation Alliance</a></li>
+          </ul>
+        </div>
+
+        <!-- Key Projects -->
+        <div class="footer-section">
+          <h4>Key Projects</h4>
+          <ul>
+            <li><a href="#">China Rare Disease Research Conference</a></li>
+            <li><a href="#">"Golden Stone Project" Patient Community Research Funding</a></li>
+            <li><a href="#">Ruiou New Year Charity Gala</a></li>
+          </ul>
+          <h4 class="footer-subtitle">News & Stories</h4>
+          <ul>
+            <li><a href="#">Latest News</a></li>
+            <li><a href="#">Rare Disease Insights</a></li>
+            <li><a href="#">Announcements</a></li>
+          </ul>
+        </div>
+
+        <!-- Support & Contact -->
+        <div class="footer-section">
+          <h4>Patients & Researchers</h4>
+          <ul>
+            <li><a href="#">Support & Contact</a></li>
+          </ul>
+          <h4 class="footer-subtitle">Support Us</h4>
+          <ul>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+          <h4 class="footer-subtitle">Contact Us</h4>
+          <div class="contact-info">
+            <p>Phone: ***********</p>
+            <p>Email: ***********************</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 版权信息 -->
+      <div class="copyright">
+        <p>&copy; 2024 Charity Events Exchange Platform. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</div>

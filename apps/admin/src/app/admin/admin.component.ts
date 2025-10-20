@@ -76,7 +76,7 @@ export class AdminComponent implements OnInit {
     this.loadRegistrations();
   }
 
-  // ================== Events ==================
+  // Events
   loadEvents() {
     this.http.get<Event[]>('/api/admin/events').subscribe(data => this.events = data);
   }
@@ -101,7 +101,7 @@ export class AdminComponent implements OnInit {
     this.newEvent = { ...e };
   }
 
-  // ================== Categories ==================
+  // Categories
   loadCategories() {
     this.http.get<Category[]>('/api/admin/categories').subscribe(data => this.categories = data);
   }
@@ -126,7 +126,7 @@ export class AdminComponent implements OnInit {
     this.newCategory = { ...c };
   }
 
-  // ================== Organisations ==================
+  // Organisations
   loadOrganisations() {
     this.http.get<Organisation[]>('/api/admin/organisations').subscribe(data => this.organisations = data);
   }
@@ -151,7 +151,7 @@ export class AdminComponent implements OnInit {
     this.newOrganisation = { ...o };
   }
 
-  // ================== Registrations ==================
+  // Registrations
   loadRegistrations() {
     this.http.get<Registration[]>('/api/admin/registrations').subscribe(data => this.registrations = data);
   }

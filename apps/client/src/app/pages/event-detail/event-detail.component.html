@@ -1,0 +1,227 @@
+<!-- 和平鸽飘落效果 -->
+<div class="dove-fall">
+    <div class="dove small">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove medium">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove large">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+</div>
+
+<!-- 爱心拖尾效果容器 -->
+<div class="trail-container" id="trailContainer"></div>
+
+<div class="event-detail-container">
+  <!-- 加载状态 -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading event details...</p>
+  </div>
+
+  <!-- 错误信息 -->
+  <div *ngIf="errorMessage && !isLoading" class="error-container">
+    <p>{{ errorMessage }}</p>
+    <button (click)="loadEventDetails()" class="retry-btn">Retry</button>
+    <button (click)="goBack()" class="back-btn">Back to Home</button>
+  </div>
+
+  <!-- 正常内容 -->
+  <div *ngIf="!isLoading && !errorMessage && event">
+    <!-- 导航栏 -->
+    <nav class="detail-nav">
+      <div class="site-title">Charity Events</div>
+      <div class="nav-links">
+        <a routerLink="/home">Home</a>
+        <a routerLink="/search">Search</a>
+        <a routerLink="/profile">Profile</a>
+        <a routerLink="/security">Security</a>
+      </div>
+    </nav>
+
+    <!-- 返回按钮 -->
+    <div class="back-section">
+      <button (click)="goBack()" class="back-btn">
+        ← Back to Events
+      </button>
+    </div>
+
+    <!-- 活动详情 -->
+    <div class="event-detail-content">
+      <div class="event-header">
+        <div class="event-cover">
+          <img [src]="getEventImage(event)" [alt]="event.name" class="cover-image">
+        </div>
+        <div class="event-info">
+          <div class="event-category">{{ event.category_name }}</div>
+          <h1 class="event-title">{{ event.name }}</h1>
+          <p class="event-description">{{ event.description }}</p>
+
+          <div class="event-meta">
+            <div class="meta-item">
+              <span class="icon">📅</span>
+              <div class="meta-content">
+                <strong>Date & Time</strong>
+                <span>{{ formatDate(event.start_datetime) }}</span>
+              </div>
+            </div>
+            <div class="meta-item">
+              <span class="icon">📍</span>
+              <div class="meta-content">
+                <strong>Location</strong>
+                <span>{{ event.location }}</span>
+              </div>
+            </div>
+            <div class="meta-item">
+              <span class="icon">👥</span>
+              <div class="meta-content">
+                <strong>Participants</strong>
+                <span>{{ event.registration_count }} registered</span>
+              </div>
+            </div>
+            <div class="meta-item">
+              <span class="icon">🏢</span>
+              <div class="meta-content">
+                <strong>Organization</strong>
+                <span>{{ event.org_name }}</span>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- 天气信息部分 -->
+          <div class="meta-item weather-info" *ngIf="weatherData || isLoadingWeather || weatherError">
+            <span class="icon">🌤️</span>
+            <div class="meta-content">
+              <strong>Weather Forecast</strong>
+
+              <!-- 加载状态 -->
+              <div *ngIf="isLoadingWeather" class="weather-loading">
+                <span>Loading weather information...</span>
+              </div>
+
+              <!-- 错误信息 -->
+              <div *ngIf="weatherError && !isLoadingWeather" class="weather-error">
+                <span>{{ weatherError }}</span>
+              </div>
+
+              <!-- 天气数据 -->
+              <div *ngIf="weatherData && !isLoadingWeather" class="weather-data">
+                <div class="weather-main">
+                  <span class="weather-description">{{ weatherDescription }}</span>
+                </div>
+                <div class="weather-temps">
+                  <span class="temp-high">H: {{ weatherData.daily.temperature_2m_max[0] }}°C</span>
+                  <span class="temp-low">L: {{ weatherData.daily.temperature_2m_min[0] }}°C</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="event-actions">
+            <button class="btn btn-primary" (click)="joinEvent(event)">Join Event</button>
+            <button class="btn btn-secondary" (click)="donateToEvent()">Donate Now</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 更多详情区域（预留） -->
+      <div class="event-details-section">
+        <h2>About This Event</h2>
+        <p>More details about the event will be displayed here. This section can include detailed description, agenda, speakers, and other important information.</p>
+
+        <div class="detail-grid">
+          <div class="detail-card">
+            <h3>Event Status</h3>
+            <p>{{ event.events_status }}</p>
+          </div>
+          <div class="detail-card">
+            <h3>Registration</h3>
+            <p>{{ event.registration_count }} people registered</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 平台信息页脚 -->
+    <footer class="platform-footer">
+      <!-- 与 home 页面相同的页脚内容 -->
+      <div class="footer-container">
+        <div class="footer-sections">
+          <!-- About Us -->
+          <div class="footer-section">
+            <h4>About Us</h4>
+            <ul>
+              <li><a href="#">Platform Introduction</a></li>
+              <li><a href="#">Co-founders</a></li>
+              <li><a href="#">Board of Directors</a></li>
+              <li><a href="#">Scientific Advisory Committee</a></li>
+              <li><a href="#">Executive Team</a></li>
+              <li><a href="#">Milestones</a></li>
+              <li><a href="#">Annual Reports</a></li>
+            </ul>
+          </div>
+
+          <!-- Join Us -->
+          <div class="footer-section">
+            <h4>Join Us</h4>
+            <ul>
+              <li><a href="#">Project Collaboration</a></li>
+            </ul>
+            <h4 class="footer-subtitle">Project Funding</h4>
+            <ul>
+              <li><a href="#">Science Innovation Alliance</a></li>
+            </ul>
+          </div>
+
+          <!-- Key Projects -->
+          <div class="footer-section">
+            <h4>Key Projects</h4>
+            <ul>
+              <li><a href="#">China Rare Disease Research Conference</a></li>
+              <li><a href="#">"Golden Stone Project" Patient Community Research Funding</a></li>
+              <li><a href="#">Ruiou New Year Charity Gala</a></li>
+            </ul>
+            <h4 class="footer-subtitle">News & Stories</h4>
+            <ul>
+              <li><a href="#">Latest News</a></li>
+              <li><a href="#">Rare Disease Insights</a></li>
+              <li><a href="#">Announcements</a></li>
+            </ul>
+          </div>
+
+          <!-- Support & Contact -->
+          <div class="footer-section">
+            <h4>Patients & Researchers</h4>
+            <ul>
+              <li><a href="#">Support & Contact</a></li>
+            </ul>
+            <h4 class="footer-subtitle">Support Us</h4>
+            <ul>
+              <li><a href="#">Contact Us</a></li>
+            </ul>
+            <h4 class="footer-subtitle">Contact Us</h4>
+            <div class="contact-info">
+              <p>Phone: ***********</p>
+              <p>Email: ***********************</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 版权信息 -->
+        <div class="copyright">
+          <p>&copy; 2024 Charity Events Exchange Platform. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>

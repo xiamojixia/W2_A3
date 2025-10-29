@@ -4,7 +4,8 @@ import { AdminComponent } from './admin/admin.component';
 
 const routes: Routes = [
   { path: 'admin', component: AdminComponent },
-  { path: '', redirectTo: '/admin', pathMatch: 'full' },
+  { path: '', redirectTo: '/admin/browser', pathMatch: 'full' },
+  { path: '**', redirectTo: '/admin/browser' }
 ];
 
 @NgModule({

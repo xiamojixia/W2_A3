@@ -1,0 +1,233 @@
+<!-- 和平鸽飘落效果 -->
+<div class="dove-fall">
+    <div class="dove small">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove medium">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove large">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove small">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove medium">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove large">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove small">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove medium">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove large">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+</div>
+
+<!-- 爱心拖尾效果容器 -->
+<div class="trail-container" id="trailContainer"></div>
+
+
+<div class="home-container">
+  <!-- 加载状态 -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading events...</p>
+  </div>
+
+  <!-- 错误信息 -->
+  <div *ngIf="errorMessage && !isLoading" class="error-container">
+    <p>{{ errorMessage }}</p>
+    <button (click)="loadInitialData()" class="retry-btn">Retry</button>
+  </div>
+
+  <!-- 正常内容 -->
+  <div *ngIf="!isLoading && !errorMessage">
+    <!-- 导航栏 -->
+    <nav class="home-nav">
+      <div class="site-title">Charity Events</div>
+      <div class="nav-links">
+        <a routerLink="/home" class="active">Home</a>
+        <a routerLink="/search">Search</a>
+        <a routerLink="/profile">Profile</a>
+        <a routerLink="/security">Security</a>
+      </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <div class="header-hero">
+      <div class="hero-card">
+        <h1>Light is born from darkness</h1>
+        <p>We raise funds, we provide aid, we save lives.</p>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-number">{{ totalEvents }}</span>
+            <span class="stat-label">Events</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ totalParticipants }}</span>
+            <span class="stat-label">Participants</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">${{ totalFunds }}</span>
+            <span class="stat-label">Funds Raised</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 轮播图区域 -->
+    <div *ngIf="featuredEvents.length > 0" class="carousel-section">
+      <h2 class="section-title">Featured Events</h2>
+      <div class="carousel">
+        <div class="carousel-track" id="carousel-track">
+          <!-- TypeScript 会动态生成轮播图内容 -->
+        </div>
+        <div class="carousel-indicators">
+          <button
+            *ngFor="let event of featuredEvents; let i = index"
+            class="carousel-indicator"
+            [class.active]="i === currentSlideIndex"
+            (click)="goToSlide(i)">
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 所有活动网格 -->
+    <section class="events-grid-section">
+      <h2 class="section-title">All Events</h2>
+      <div class="events-grid">
+        <div
+          *ngFor="let event of allEvents"
+          class="event-grid-item"
+          (click)="viewEventDetails(event)">
+          <img [src]="event.image_url || 'https://via.placeholder.com/350x200?text=No+Image'"
+              [alt]="event.name" class="event-image">
+          <div class="event-content">
+            <h3 class="event-title">{{ event.name }}</h3>
+            <p class="event-description">{{ event.description }}</p>
+            <div class="event-details">
+              <div class="detail-item">
+                <span class="icon">📅</span>
+                <span>{{ formatDate(event.start_datetime) }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="icon">📍</span>
+                <span>{{ event.location }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="icon">👥</span>
+                <span>{{ event.registration_count }} participants</span>
+              </div>
+              <div class="detail-item">
+                <span class="icon">🏢</span>
+                <span>{{ event.org_name }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 没有活动的提示 -->
+    <div *ngIf="allEvents.length === 0" class="no-events">
+      <h3>No events available at the moment</h3>
+      <p>Check back later for new charity events.</p>
+    </div>
+
+    <!-- 平台信息页脚 -->
+    <footer class="platform-footer">
+      <div class="footer-container">
+        <div class="footer-sections">
+          <!-- About Us -->
+          <div class="footer-section">
+            <h4>About Us</h4>
+            <ul>
+              <li><a href="#">Platform Introduction</a></li>
+              <li><a href="#">Co-founders</a></li>
+              <li><a href="#">Board of Directors</a></li>
+              <li><a href="#">Scientific Advisory Committee</a></li>
+              <li><a href="#">Executive Team</a></li>
+              <li><a href="#">Milestones</a></li>
+              <li><a href="#">Annual Reports</a></li>
+            </ul>
+          </div>
+
+          <!-- Join Us -->
+          <div class="footer-section">
+            <h4>Join Us</h4>
+            <ul>
+              <li><a href="#">Project Collaboration</a></li>
+            </ul>
+            <h4 class="footer-subtitle">Project Funding</h4>
+            <ul>
+              <li><a href="#">Science Innovation Alliance</a></li>
+            </ul>
+          </div>
+
+          <!-- Key Projects -->
+          <div class="footer-section">
+            <h4>Key Projects</h4>
+            <ul>
+              <li><a href="#">China Rare Disease Research Conference</a></li>
+              <li><a href="#">"Golden Stone Project" Patient Community Research Funding</a></li>
+              <li><a href="#">Ruiou New Year Charity Gala</a></li>
+            </ul>
+            <h4 class="footer-subtitle">News & Stories</h4>
+            <ul>
+              <li><a href="#">Latest News</a></li>
+              <li><a href="#">Rare Disease Insights</a></li>
+              <li><a href="#">Announcements</a></li>
+            </ul>
+          </div>
+
+          <!-- Support & Contact -->
+          <div class="footer-section">
+            <h4>Patients & Researchers</h4>
+            <ul>
+              <li><a href="#">Support & Contact</a></li>
+            </ul>
+            <h4 class="footer-subtitle">Support Us</h4>
+            <ul>
+              <li><a href="#">Contact Us</a></li>
+            </ul>
+            <h4 class="footer-subtitle">Contact Us</h4>
+            <div class="contact-info">
+              <p>Phone: ***********</p>
+              <p>Email: ***********************</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 版权信息 -->
+        <div class="copyright">
+          <p>&copy; 2024 Charity Events Exchange Platform. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>

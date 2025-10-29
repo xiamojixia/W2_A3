@@ -1,43 +1,241 @@
 <div class="login-container">
-  <div class="login-card">
-    <h2>用户登录</h2>
-    <form (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="username">用户名</label>
-        <input
-          type="text"
-          id="username"
-          [(ngModel)]="username"
-          name="username"
-          required
-          placeholder="请输入用户名">
+  <!-- 成功注册模态框 -->
+  <div *ngIf="showSuccessModal" class="modal-overlay">
+    <div class="modal-content gold-border">
+      <div class="modal-header">
+        <h3>🎉 Registration Successful!</h3>
+      </div>
+      <div class="modal-body">
+        <p>Thank you for registering! We have received your event registration information.</p>
+        <p>Event details and confirmation have been sent to your email.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-gold" (click)="closeSuccessModal()">Back to Home</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 验证码弹窗 -->
+  <div *ngIf="showVerificationModal" class="modal-overlay">
+    <div class="modal-content gold-border">
+      <div class="modal-header">
+        <h3>📧 Verification Code</h3>
+      </div>
+      <div class="modal-body">
+        <div class="verification-code-display">
+          <p>Your verification code is:</p>
+          <div class="code-display">{{ verificationCode }}</div>
+          <p class="code-hint">Please enter this verification code in the input field below</p>
+          <p class="countdown" *ngIf="countdown > 0">
+            Resend available in {{ countdown }} seconds
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-gold" (click)="closeVerificationModal()">Confirm</button>
+        <button
+          class="btn-gold-outline"
+          (click)="resendVerificationCode()"
+          [disabled]="!canResendVerification">
+          Resend
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="login-card gold-border">
+    <!-- 活动信息展示 -->
+    <div *ngIf="currentEvent && !isLoading" class="event-info-section">
+      <div class="section-header">
+        <h2>Event Information</h2>
+        <div class="gold-divider"></div>
       </div>
 
-      <div class="form-group">
-        <label for="password">密码</label>
-        <input
-          type="password"
-          id="password"
-          [(ngModel)]="password"
-          name="password"
-          required
-          placeholder="请输入密码">
+      <div class="event-card">
+        <div class="event-image" *ngIf="currentEvent.image_url">
+          <img [src]="currentEvent.image_url" [alt]="currentEvent.name">
+        </div>
+        <div class="event-details">
+          <h3 class="event-title">{{ currentEvent.name }}</h3>
+          <p class="event-description">{{ currentEvent.description }}</p>
+
+          <div class="event-meta">
+            <div class="meta-item">
+              <span class="icon">📅</span>
+              <span>{{ formatDate(currentEvent.start_datetime) }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="icon">🕒</span>
+              <span>{{ formatTime(currentEvent.start_datetime) }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="icon">📍</span>
+              <span>{{ currentEvent.location }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="icon">🏢</span>
+              <span>{{ currentEvent.org_name }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="icon">🎫</span>
+              <span>¥{{ currentEvent.ticket_price }}/ticket</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 加载状态 -->
+    <div *ngIf="isLoading && !currentEvent" class="loading-section">
+      <div class="loading-spinner"></div>
+      <p>Loading event information...</p>
+    </div>
+
+    <!-- 注册表单 -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2>Event Registration</h2>
+        <div class="gold-divider"></div>
       </div>
 
-      <button
-        type="submit"
-        class="login-btn"
-        [disabled]="isLoading">
-        {{ isLoading ? '登录中...' : '登录' }}
-      </button>
+      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+        <!-- 姓名 -->
+        <div class="form-group">
+          <label for="registrant_name" class="form-label">Name *</label>
+          <input
+            type="text"
+            id="registrant_name"
+            formControlName="registrant_name"
+            class="form-input"
+            placeholder="Please enter your name">
+          <div *ngIf="formControls['registrant_name'].touched && formControls['registrant_name'].invalid"
+               class="error-message">
+            <span *ngIf="formControls['registrant_name'].errors?.['required']">Please enter your name</span>
+            <span *ngIf="formControls['registrant_name'].errors?.['minlength']">Name must be at least 2 characters</span>
+          </div>
+        </div>
 
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
+        <!-- 邮箱 -->
+        <div class="form-group">
+          <label for="registrant_email" class="form-label">Email *</label>
+          <input
+            type="email"
+            id="registrant_email"
+            formControlName="registrant_email"
+            class="form-input"
+            placeholder="Please enter your email">
+          <div *ngIf="formControls['registrant_email'].touched && formControls['registrant_email'].invalid"
+               class="error-message">
+            <span *ngIf="formControls['registrant_email'].errors?.['required']">Please enter your email</span>
+            <span *ngIf="formControls['registrant_email'].errors?.['email']">Please enter a valid email address</span>
+          </div>
+        </div>
+
+        <!-- 电话 -->
+        <div class="form-group">
+          <label for="registrant_phone" class="form-label">Phone *</label>
+          <input
+            type="tel"
+            id="registrant_phone"
+            formControlName="registrant_phone"
+            class="form-input"
+            placeholder="Please enter your phone number">
+          <div *ngIf="formControls['registrant_phone'].touched && formControls['registrant_phone'].invalid"
+               class="error-message">
+            <span *ngIf="formControls['registrant_phone'].errors?.['required']">Please enter your phone number</span>
+            <span *ngIf="formControls['registrant_phone'].errors?.['pattern']">Please enter a valid phone number (10-11 digits)</span>
+          </div>
+        </div>
+
+        <!-- 获取验证码按钮 -->
+        <div class="form-group">
+          <button
+            type="button"
+            class="verification-btn"
+            (click)="getVerificationCode()"
+            [disabled]="!isBasicInfoValid() || !canResendVerification">
+            <span *ngIf="!isVerificationSent">Get Verification Code</span>
+            <span *ngIf="isVerificationSent && canResendVerification">Resend Verification Code</span>
+            <span *ngIf="isVerificationSent && !canResendVerification">Sent ({{countdown}}s)</span>
+          </button>
+        </div>
+
+        <!-- 验证码输入 -->
+        <div class="form-group" *ngIf="isVerificationSent">
+          <label for="verification_code" class="form-label">Verification Code *</label>
+          <input
+            type="text"
+            id="verification_code"
+            formControlName="verification_code"
+            class="form-input"
+            maxlength="4"
+            placeholder="Please enter 4-digit verification code">
+          <div *ngIf="formControls['verification_code'].touched && formControls['verification_code'].invalid"
+               class="error-message">
+            <span *ngIf="formControls['verification_code'].errors?.['required']">Please enter verification code</span>
+            <span *ngIf="formControls['verification_code'].errors?.['pattern']">Verification code must be 4 digits</span>
+          </div>
+        </div>
+
+        <!-- 门票数量 -->
+        <div class="form-group">
+          <label for="tickets" class="form-label">Ticket Quantity *</label>
+          <select
+            id="tickets"
+            formControlName="tickets"
+            class="form-input">
+            <option *ngFor="let num of [1,2,3,4,5,6,7,8,9,10]" [value]="num">{{ num }} tickets</option>
+          </select>
+          <div class="price-calculation" *ngIf="currentEvent">
+            <span>Subtotal: ¥{{ getTotalAmount() }}</span>
+            <small>(¥{{ currentEvent.ticket_price }} × {{ formControls['tickets'].value }} tickets)</small>
+          </div>
+        </div>
+
+        <!-- 注册日期 -->
+        <div class="form-group">
+          <label for="registered_at" class="form-label">Registration Date *</label>
+          <input
+            type="date"
+            id="registered_at"
+            formControlName="registered_at"
+            class="form-input">
+        </div>
+
+        <!-- 备注 -->
+        <div class="form-group">
+          <label for="comments" class="form-label">Comments</label>
+          <textarea
+            id="comments"
+            formControlName="comments"
+            class="form-textarea"
+            placeholder="Please specify any special requirements (e.g., dietary restrictions, accessibility needs, etc.)"
+            rows="3"></textarea>
+        </div>
+
+        <!-- 提交按钮 -->
+        <button
+          type="submit"
+          class="submit-btn"
+          [disabled]="isLoading || !currentEvent">
+          <span *ngIf="!isLoading">🎫 Register Now</span>
+          <span *ngIf="isLoading">⏳ Submitting...</span>
+        </button>
+
+        <!-- 表单验证提示 -->
+        <div *ngIf="isSubmitted && registrationForm.invalid" class="form-error-alert">
+          <p>⚠️ Please check and complete all required fields</p>
+        </div>
+      </form>
+    </div>
+
+    <!-- 无活动信息提示 -->
+    <div *ngIf="!currentEvent && !isLoading" class="no-event-section">
+      <div class="no-event-card">
+        <h3>❌ No Event Selected</h3>
+        <p>Please select an event to register from the home page</p>
+        <button class="btn-gold-outline" (click)="navigateToHome()">Back to Home</button>
       </div>
-    </form>
-
-    <div class="demo-credentials">
-      <p>演示账号：任意用户名和密码</p>
     </div>
   </div>
 </div>

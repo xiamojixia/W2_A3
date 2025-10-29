@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
+import { ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -12,9 +12,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { SearchComponent } from './pages/search/search.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { SecurityComponent } from './pages/security/security.component';
-
-// 导入共享组件
-import { NavigationComponent } from './components/navigation/navigation.component';
+import { EventDetailComponent } from './pages/event-detail/event-detail.component';
 
 // 导入服务和守卫
 import { AuthService } from './services/auth.service';
@@ -29,13 +27,14 @@ import { AuthGuard } from './guards/auth.guard';
     SearchComponent,
     ProfileComponent,
     SecurityComponent,
-    NavigationComponent
+    EventDetailComponent
   ],
   imports: [
     // 只有模块才放在 imports 数组中
     BrowserModule,
     AppRoutingModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule
   ],
   providers: [

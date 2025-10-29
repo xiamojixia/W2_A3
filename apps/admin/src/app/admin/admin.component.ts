@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 interface Event {
   id?: number;
@@ -52,6 +53,7 @@ interface Registration {
 })
 export class AdminComponent implements OnInit {
   activeTab: string = 'events';
+  apiUrl = environment.apiUrl;
 
   isEditingEvent: boolean = false;
   isEditingCategory: boolean = false;
@@ -83,14 +85,14 @@ export class AdminComponent implements OnInit {
 
   // Events
   loadEvents() {
-    this.http.get<Event[]>('/api/admin/events').subscribe(data => this.events = data);
+    this.http.get<Event[]>(`${this.apiUrl}/events`).subscribe(data => this.events = data);
   }
 
   addEvent() {
     if (this.isEditingEvent) {
       this.updateEvent(this.newEvent);
     } else {
-      this.http.post<Event>('/api/admin/events', this.newEvent).subscribe(() => {
+      this.http.post<Event>(`${this.apiUrl}/events`, this.newEvent).subscribe(() => {
         this.resetEventForm();
         this.loadEvents();
       });
@@ -98,15 +100,15 @@ export class AdminComponent implements OnInit {
   }
 
   updateEvent(event: Event) {
-  this.http.put<Event>(`/api/admin/events/${event.id}`, event).subscribe(() => {
-    this.resetEventForm();
-    this.loadEvents();
-  });
+    this.http.put<Event>(`${this.apiUrl}/events/${event.id}`, event).subscribe(() => {
+      this.resetEventForm();
+      this.loadEvents();
+    });
   }
 
   deleteEvent(id?: number) {
     if (!id) return;
-    this.http.delete(`/api/admin/events/${id}`).subscribe(() => this.loadEvents());
+    this.http.delete(`${this.apiUrl}/events/${id}`).subscribe(() => this.loadEvents());
   }
 
   editEvent(e: Event) {
@@ -115,20 +117,20 @@ export class AdminComponent implements OnInit {
   }
 
   resetEventForm() {
-  this.newEvent = { org_id: 0, category_id: 0, name: '', start_datetime: '', end_datetime: '' };
-  this.isEditingEvent = false;
+    this.newEvent = { org_id: 0, category_id: 0, name: '', start_datetime: '', end_datetime: '' };
+    this.isEditingEvent = false;
   }
 
   // Categories
   loadCategories() {
-    this.http.get<Category[]>('/api/admin/categories').subscribe(data => this.categories = data);
+    this.http.get<Category[]>(`${this.apiUrl}/categories`).subscribe(data => this.categories = data);
   }
 
   addCategory() {
     if (this.isEditingCategory) {
       this.updateCategory(this.newCategory);
     } else {
-      this.http.post<Category>('/api/admin/categories', this.newCategory).subscribe(() => {
+      this.http.post<Category>(`${this.apiUrl}/categories`, this.newCategory).subscribe(() => {
         this.resetCategoryForm();
         this.loadCategories();
       });
@@ -136,37 +138,37 @@ export class AdminComponent implements OnInit {
   }
 
   updateCategory(category: Category) {
-  this.http.put<Category>(`/api/admin/categories/${category.id}`, category).subscribe(() => {
-    this.resetCategoryForm();
-    this.loadCategories();
-  });
+    this.http.put<Category>(`${this.apiUrl}/categories/${category.id}`, category).subscribe(() => {
+      this.resetCategoryForm();
+      this.loadCategories();
+    });
   }
 
   deleteCategory(id?: number) {
     if (!id) return;
-    this.http.delete(`/api/admin/categories/${id}`).subscribe(() => this.loadCategories());
+    this.http.delete(`${this.apiUrl}/categories/${id}`).subscribe(() => this.loadCategories());
   }
 
   editCategory(c: Category) {
-  this.newCategory = { ...c };
-  this.isEditingCategory = true;
+    this.newCategory = { ...c };
+    this.isEditingCategory = true;
   }
 
   resetCategoryForm() {
-  this.newCategory = { name: '' };
-  this.isEditingCategory = false;
+    this.newCategory = { name: '' };
+    this.isEditingCategory = false;
   }
 
   // Organisations
   loadOrganisations() {
-    this.http.get<Organisation[]>('/api/admin/organisations').subscribe(data => this.organisations = data);
+    this.http.get<Organisation[]>(`${this.apiUrl}/organisations`).subscribe(data => this.organisations = data);
   }
 
   addOrganisation() {
     if (this.isEditingOrganisation) {
       this.updateOrganisation(this.newOrganisation);
     } else {
-      this.http.post<Organisation>('/api/admin/organisations', this.newOrganisation).subscribe(() => {
+      this.http.post<Organisation>(`${this.apiUrl}/organisations`, this.newOrganisation).subscribe(() => {
         this.resetOrganisationForm();
         this.loadOrganisations();
       });
@@ -174,15 +176,15 @@ export class AdminComponent implements OnInit {
   }
 
   updateOrganisation(org: Organisation) {
-  this.http.put<Organisation>(`/api/admin/organisations/${org.id}`, org).subscribe(() => {
-    this.resetOrganisationForm();
-    this.loadOrganisations();
-  });
+    this.http.put<Organisation>(`${this.apiUrl}/organisations/${org.id}`, org).subscribe(() => {
+      this.resetOrganisationForm();
+      this.loadOrganisations();
+    });
   }
 
   deleteOrganisation(id?: number) {
     if (!id) return;
-    this.http.delete(`/api/admin/organisations/${id}`).subscribe(() => this.loadOrganisations());
+    this.http.delete(`${this.apiUrl}/organisations/${id}`).subscribe(() => this.loadOrganisations());
   }
 
   editOrganisation(o: Organisation) {
@@ -191,20 +193,20 @@ export class AdminComponent implements OnInit {
   }
 
   resetOrganisationForm() {
-  this.newOrganisation = { name: '' };
-  this.isEditingOrganisation = false;
+    this.newOrganisation = { name: '' };
+    this.isEditingOrganisation = false;
   }
 
   // Registrations
   loadRegistrations() {
-    this.http.get<Registration[]>('/api/admin/registrations').subscribe(data => this.registrations = data);
+    this.http.get<Registration[]>(`${this.apiUrl}/registrations`).subscribe(data => this.registrations = data);
   }
 
   addRegistration() {
     if (this.isEditingRegistration) {
       this.updateRegistration(this.newRegistration);
     } else {
-      this.http.post<Registration>('/api/admin/registrations', this.newRegistration).subscribe(() => {
+      this.http.post<Registration>(`${this.apiUrl}/registrations`, this.newRegistration).subscribe(() => {
         this.resetRegistrationForm();
         this.loadRegistrations();
       });
@@ -212,15 +214,15 @@ export class AdminComponent implements OnInit {
   }
 
   updateRegistration(reg: Registration) {
-  this.http.put<Registration>(`/api/admin/registrations/${reg.id}`, reg).subscribe(() => {
-    this.resetRegistrationForm();
-    this.loadRegistrations();
-  });
+    this.http.put<Registration>(`${this.apiUrl}/registrations/${reg.id}`, reg).subscribe(() => {
+      this.resetRegistrationForm();
+      this.loadRegistrations();
+    });
   }
 
   deleteRegistration(id?: number) {
     if (!id) return;
-    this.http.delete(`/api/admin/registrations/${id}`).subscribe(() => this.loadRegistrations());
+    this.http.delete(`${this.apiUrl}/registrations/${id}`).subscribe(() => this.loadRegistrations());
   }
 
   editRegistration(r: Registration) {
@@ -229,7 +231,7 @@ export class AdminComponent implements OnInit {
   }
 
   resetRegistrationForm() {
-  this.newRegistration = { event_id: 0, registrant_name: '', registrant_email: '' };
-  this.isEditingRegistration = false;
+    this.newRegistration = { event_id: 0, registrant_name: '', registrant_email: '' };
+    this.isEditingRegistration = false;
   }
 }

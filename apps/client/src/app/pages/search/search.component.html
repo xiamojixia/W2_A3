@@ -1,0 +1,269 @@
+<!-- 和平鸽飘落效果 -->
+<div class="dove-fall">
+    <div class="dove small">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove medium">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove large">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove small">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove medium">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+    <div class="dove large">
+        <div class="head"></div>
+        <div class="tail"></div>
+        <div class="olive-branch"></div>
+    </div>
+</div>
+
+<!-- 爱心拖尾效果容器 -->
+<div class="trail-container" id="trailContainer"></div>
+
+<div class="search-container">
+  <!-- 导航栏 -->
+  <nav class="search-nav">
+    <div class="site-title">Charity Events</div>
+    <div class="nav-links">
+      <a routerLink="/home">Home</a>
+      <a routerLink="/search" class="active">Search</a>
+      <a routerLink="/profile">Profile</a>
+      <a routerLink="/security">Security</a>
+    </div>
+  </nav>
+
+  <!-- 搜索区域 -->
+  <div class="search-hero">
+    <div class="search-card">
+      <h1>Find Charity Events</h1>
+      <p>Search for events by date, location, or category</p>
+
+      <!-- 搜索表单 -->
+      <div class="search-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="startDate">Start Date</label>
+            <input
+              type="date"
+              id="startDate"
+              [(ngModel)]="startDate"
+              class="form-input"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="endDate">End Date</label>
+            <input
+              type="date"
+              id="endDate"
+              [(ngModel)]="endDate"
+              class="form-input"
+            >
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="location">Location</label>
+            <input
+              type="text"
+              id="location"
+              [(ngModel)]="location"
+              placeholder="Enter location..."
+              class="form-input"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select
+              id="category"
+              [(ngModel)]="category"
+              class="form-input"
+            >
+              <option value="">All Categories</option>
+              <option *ngFor="let cat of categories" [value]="cat.id">
+                {{ cat.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="onSearch()"
+            [disabled]="isLoading"
+          >
+            <span *ngIf="!isLoading">Search Events</span>
+            <span *ngIf="isLoading">Searching...</span>
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="onClear()"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 错误信息 -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- 加载状态 -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Searching for events...</p>
+  </div>
+
+  <!-- 搜索结果 -->
+  <div *ngIf="hasSearched && !isLoading" class="search-results-section">
+    <h2 class="section-title">
+      Search Results
+      <span *ngIf="searchResults.length > 0" class="results-count">
+        ({{ searchResults.length }} events found)
+      </span>
+    </h2>
+
+    <!-- 没有结果 -->
+    <div *ngIf="searchResults.length === 0" class="no-results">
+      <h3>No events found</h3>
+      <p>Try adjusting your search criteria or browse all events on the home page.</p>
+    </div>
+
+    <!-- 搜索结果网格 -->
+    <div *ngIf="searchResults.length > 0" class="search-results-grid">
+      <div
+        *ngFor="let event of searchResults"
+        class="event-card"
+        (click)="viewEventDetails(event)"
+      >
+        <div class="event-image-container">
+          <img
+            [src]="getEventImage(event)"
+            [alt]="event.name"
+            class="event-image"
+          >
+          <div class="event-category">{{ event.category_name }}</div>
+        </div>
+
+        <div class="event-content">
+          <h3 class="event-title">{{ event.name }}</h3>
+          <p class="event-description">{{ event.description }}</p>
+
+          <div class="event-details">
+            <div class="detail-item">
+              <span class="icon">📅</span>
+              <span>{{ formatDate(event.start_datetime) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="icon">📍</span>
+              <span>{{ event.location }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="icon">👥</span>
+              <span>{{ event.registration_count }} participants</span>
+            </div>
+            <div class="detail-item">
+              <span class="icon">🏢</span>
+              <span>{{ event.org_name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 平台信息页脚 -->
+  <footer class="platform-footer">
+    <div class="footer-container">
+      <div class="footer-sections">
+        <!-- About Us -->
+        <div class="footer-section">
+          <h4>About Us</h4>
+          <ul>
+            <li><a href="#">Platform Introduction</a></li>
+            <li><a href="#">Co-founders</a></li>
+            <li><a href="#">Board of Directors</a></li>
+            <li><a href="#">Scientific Advisory Committee</a></li>
+            <li><a href="#">Executive Team</a></li>
+            <li><a href="#">Milestones</a></li>
+            <li><a href="#">Annual Reports</a></li>
+          </ul>
+        </div>
+
+        <!-- Join Us -->
+        <div class="footer-section">
+          <h4>Join Us</h4>
+          <ul>
+            <li><a href="#">Project Collaboration</a></li>
+          </ul>
+          <h4 class="footer-subtitle">Project Funding</h4>
+          <ul>
+            <li><a href="#">Science Innovation Alliance</a></li>
+          </ul>
+        </div>
+
+        <!-- Key Projects -->
+        <div class="footer-section">
+          <h4>Key Projects</h4>
+          <ul>
+            <li><a href="#">China Rare Disease Research Conference</a></li>
+            <li><a href="#">"Golden Stone Project" Patient Community Research Funding</a></li>
+            <li><a href="#">Ruiou New Year Charity Gala</a></li>
+          </ul>
+          <h4 class="footer-subtitle">News & Stories</h4>
+          <ul>
+            <li><a href="#">Latest News</a></li>
+            <li><a href="#">Rare Disease Insights</a></li>
+            <li><a href="#">Announcements</a></li>
+          </ul>
+        </div>
+
+        <!-- Support & Contact -->
+        <div class="footer-section">
+          <h4>Patients & Researchers</h4>
+          <ul>
+            <li><a href="#">Support & Contact</a></li>
+          </ul>
+          <h4 class="footer-subtitle">Support Us</h4>
+          <ul>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+          <h4 class="footer-subtitle">Contact Us</h4>
+          <div class="contact-info">
+            <p>Phone: ***********</p>
+            <p>Email: ***********************</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 版权信息 -->
+      <div class="copyright">
+        <p>&copy; 2024 Charity Events Exchange Platform. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</div>

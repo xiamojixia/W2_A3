@@ -1,0 +1,607 @@
+:root {
+  --bg: #0a0a0a;
+  --card: #1a1a1a;
+  --muted: #b0b0b0;
+  --accent: #d4af37;
+  --glass: rgba(255, 255, 255, 0.05);
+}
+
+.profile-container {
+  margin: 0;
+  font-family: "Microsoft YaHei", Arial, sans-serif;
+  background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+  color: #e0e0e0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* 导航栏 */
+.profile-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 28px;
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.site-title {
+  font-family: "Microsoft YaHei", "PingFang SC", Arial;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.6px;
+  color: #d4af37;
+}
+
+.nav-links {
+  display: flex;
+  gap: 18px;
+}
+
+.nav-links a {
+  color: #b0b0b0;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 6px;
+}
+
+.nav-links a:hover {
+  color: #d4af37;
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.nav-links a.active {
+  color: #d4af37;
+  background: rgba(212, 175, 55, 0.2);
+}
+
+/* 主要内容 */
+.profile-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.profile-title {
+  font-size: 36px;
+  color: #d4af37;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.profile-subtitle {
+  font-size: 18px;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* 个人资料卡片 */
+.profile-card {
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 16px;
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+/* 头像区域 */
+.avatar-section {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(26, 26, 26, 0.3));
+  padding: 40px;
+  text-align: center;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.avatar-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.avatar-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #d4af37;
+  transition: all 0.3s ease;
+}
+
+.avatar-container:hover .avatar-image {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+}
+
+.avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.avatar-container:hover .avatar-overlay {
+  opacity: 1;
+}
+
+.avatar-text {
+  color: #d4af37;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.username {
+  font-size: 24px;
+  color: #ffffff;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.user-bio {
+  font-size: 16px;
+  color: var(--muted);
+  margin: 0;
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* 信息区域 */
+.info-section {
+  padding: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.section-header h3 {
+  font-size: 20px;
+  color: #d4af37;
+  margin: 0;
+  font-weight: 600;
+}
+
+.btn-edit, .btn-save, .btn-cancel {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.btn-edit {
+  background: transparent;
+  border: 1px solid #d4af37;
+  color: #d4af37;
+}
+
+.btn-edit:hover {
+  background: #d4af37;
+  color: #0a0a0a;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-save {
+  background: #d4af37;
+  color: #0a0a0a;
+}
+
+.btn-save:hover {
+  background: #b8941f;
+}
+
+.btn-cancel {
+  background: transparent;
+  border: 1px solid #666;
+  color: #666;
+}
+
+.btn-cancel:hover {
+  background: #666;
+  color: #ffffff;
+}
+
+/* 信息网格 */
+.info-items {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: rgba(10, 10, 10, 0.4);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-label {
+  flex: 0 0 120px;
+  font-weight: 600;
+  color: #d4af37;
+  font-size: 14px;
+}
+
+.info-value {
+  flex: 1;
+  color: #ffffff;
+}
+
+/* 编辑表单 */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  color: #d4af37;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.form-input, .form-textarea {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: rgba(10, 10, 10, 0.6);
+  color: #ffffff;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus, .form-textarea:focus {
+  outline: none;
+  border-color: #d4af37;
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+/* 统计区域 */
+.stats-section {
+  padding: 40px;
+}
+
+.stats-section h3 {
+  font-size: 20px;
+  color: #d4af37;
+  margin: 0 0 30px 0;
+  font-weight: 600;
+  text-align: center;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(26, 26, 26, 0.3));
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+}
+
+.stat-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: #d4af37;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .profile-nav {
+    padding: 12px 20px;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .nav-links {
+    gap: 12px;
+  }
+
+  .profile-content {
+    padding: 20px 15px;
+  }
+
+  .profile-title {
+    font-size: 28px;
+  }
+
+  .avatar-section {
+    padding: 30px 20px;
+  }
+
+  .info-section, .stats-section {
+    padding: 30px 20px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-save, .btn-cancel {
+    width: 100%;
+  }
+}
+
+/* 页脚样式 */
+.platform-footer {
+  background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+  color: #e0e0e0;
+  padding: 40px 20px;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  margin-top: 4rem;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.footer-section h4 {
+  color: #d4af37;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.footer-subtitle {
+  color: #d4af37;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-section li {
+  margin-bottom: 8px;
+}
+
+.footer-section a {
+  color: #b0b0b0;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+.footer-section a:hover {
+  color: #d4af37;
+}
+
+.contact-info {
+  color: #b0b0b0;
+  font-size: 14px;
+}
+
+.contact-info p {
+  margin: 8px 0;
+}
+
+.copyright {
+  border-top: 1px solid rgba(212, 175, 55, 0.1);
+  padding-top: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.copyright p {
+  margin: 0;
+  font-size: 14px;
+}
+
+
+
+
+/* 爱心拖尾效果 */
+.trail-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.trail-heart {
+  position: absolute;
+  opacity: 0;
+  animation: heart-fade 0.8s ease-out forwards;
+  transform: translate(-50%, -50%);
+}
+
+/* 爱心形状 - 使用CSS绘制 */
+.trail-heart::before,
+.trail-heart::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 14px;
+  background: #d4af37;
+  border-radius: 50px 50px 0 0;
+}
+
+.trail-heart::before {
+  left: 8px;
+  transform: rotate(-45deg);
+  transform-origin: 0 100%;
+}
+
+.trail-heart::after {
+  left: 0;
+  transform: rotate(45deg);
+  transform-origin: 100% 100%;
+}
+
+/* 爱心淡出动画 */
+@keyframes heart-fade {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  }
+  30% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(1.1) rotate(10deg);
+  }
+  60% {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(0.9) rotate(-5deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6) rotate(15deg);
+  }
+}
+
+/* 不同大小的爱心 */
+.trail-heart.small::before,
+.trail-heart.small::after {
+  width: 4px;
+  height: 7px;
+}
+
+.trail-heart.medium::before,
+.trail-heart.medium::after {
+  width: 6px;
+  height: 10px;
+}
+
+.trail-heart.large::before,
+.trail-heart.large::after {
+  width: 10px;
+  height: 17px;
+}
+
+/* 不同颜色的爱心 */
+.trail-heart.gold::before,
+.trail-heart.gold::after {
+  background: #d4af37;
+}
+
+.trail-heart.pink::before,
+.trail-heart.pink::after {
+  background: #ff6b9d;
+}
+
+.trail-heart.white::before,
+.trail-heart.white::after {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.trail-heart.green::before,
+.trail-heart.green::after {
+  background: rgba(46, 125, 50, 0.7);
+}
+
+/* 跳动效果 */
+.trail-heart.bounce {
+  animation: heart-fade 0.8s ease-out forwards, heart-beat 0.8s ease-in-out;
+}
+
+@keyframes heart-beat {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}

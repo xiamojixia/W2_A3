@@ -1,81 +1,429 @@
+/* 黑金配色主题 */
+:root {
+  --gold-primary: #FFD700;
+  --gold-secondary: #D4AF37;
+  --gold-dark: #B8860B;
+  --black-primary: #0A0A0A;
+  --black-secondary: #1A1A1A;
+  --black-tertiary: #2A2A2A;
+  --text-light: #FFFFFF;
+  --text-gray: #CCCCCC;
+  --error-red: #DC2626;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--black-primary) 0%, var(--black-secondary) 100%);
+  padding: 2rem;
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  align-items: flex-start;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* 卡片样式 */
 .login-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: var(--black-secondary);
+  border-radius: 12px;
+  padding: 2.5rem;
   width: 100%;
-  max-width: 400px;
+  max-width: 800px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 }
 
-.login-card h2 {
-  text-align: center;
+.gold-border {
+  border: 2px solid var(--gold-primary);
+  position: relative;
+}
+
+.gold-border::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, var(--gold-primary), var(--gold-dark), var(--gold-primary));
+  border-radius: 14px;
+  z-index: -1;
+  opacity: 0.3;
+}
+
+/* 区域标题 */
+.section-header {
   margin-bottom: 2rem;
-  color: #2c3e50;
+  text-align: center;
 }
 
+.section-header h2 {
+  color: var(--gold-primary);
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.gold-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+  margin: 0 auto;
+  width: 100px;
+}
+
+/* 活动信息卡片 */
+.event-info-section {
+  margin-bottom: 2.5rem;
+}
+
+.event-card {
+  background: var(--black-tertiary);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.event-image {
+  width: 100%;
+  height: 200px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.event-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.event-title {
+  color: var(--gold-primary);
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.event-description {
+  color: var(--text-gray);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.event-meta {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-light);
+}
+
+.meta-item .icon {
+  color: var(--gold-secondary);
+}
+
+/* 表单样式 */
 .form-group {
   margin-bottom: 1.5rem;
 }
 
-.form-group label {
+.form-label {
   display: block;
+  color: var(--text-light);
   margin-bottom: 0.5rem;
-  color: #34495e;
   font-weight: 500;
 }
 
-.form-group input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #bdc3c7;
-  border-radius: 4px;
-  font-size: 1rem;
+.form-label::after {
+  content: ' *';
+  color: var(--error-red);
 }
 
-.form-group input:focus {
+.form-input, .form-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--black-tertiary);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 6px;
+  color: var(--text-light);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus, .form-textarea:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.1);
 }
 
-.login-btn {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
+.form-input::placeholder, .form-textarea::placeholder {
+  color: #666;
 }
 
-.login-btn:disabled {
-  background-color: #bdc3c7;
-  cursor: not-allowed;
+/* 价格计算 */
+.price-calculation {
+  margin-top: 0.5rem;
+  color: var(--gold-primary);
+  font-weight: 600;
 }
 
+.price-calculation small {
+  color: var(--text-gray);
+  font-weight: normal;
+}
+
+/* 错误消息 */
 .error-message {
-  color: #e74c3c;
-  text-align: center;
-  margin-top: 1rem;
-  padding: 0.5rem;
-  background-color: #fadbd8;
-  border-radius: 4px;
+  color: var(--error-red);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
 }
 
-.demo-credentials {
-  margin-top: 1.5rem;
+.form-error-alert {
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid var(--error-red);
+  border-radius: 6px;
   padding: 1rem;
-  background-color: #f8f9fa;
-  border-radius: 4px;
+  margin-top: 1rem;
+  color: var(--error-red);
   text-align: center;
-  color: #7f8c8d;
+}
+
+/* 按钮样式 */
+.submit-btn {
+  width: 100%;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+  color: var(--black-primary);
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-gold {
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+  color: var(--black-primary);
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+}
+
+.btn-gold-outline {
+  padding: 0.75rem 2rem;
+  background: transparent;
+  color: var(--gold-primary);
+  border: 1px solid var(--gold-primary);
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-gold-outline:hover {
+  background: rgba(255, 215, 0, 0.1);
+}
+
+/* 加载状态 */
+.loading-section {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-light);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 215, 0, 0.3);
+  border-top: 3px solid var(--gold-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 无活动状态 */
+.no-event-section {
+  text-align: center;
+  padding: 3rem;
+}
+
+.no-event-card {
+  background: var(--black-tertiary);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.no-event-card h3 {
+  color: var(--error-red);
+  margin-bottom: 1rem;
+}
+
+.no-event-card p {
+  color: var(--text-gray);
+  margin-bottom: 1.5rem;
+}
+
+/* 模态框 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--black-secondary);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.modal-header h3 {
+  color: var(--gold-primary);
+  margin-bottom: 1rem;
+}
+
+.modal-body {
+  color: var(--text-light);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 1rem;
+  }
+
+  .login-card {
+    padding: 1.5rem;
+  }
+
+  .event-meta {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .event-title {
+    font-size: 1.2rem;
+  }
+}
+
+
+
+/* 验证码相关样式 */
+.verification-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+  color: var(--black-primary);
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.verification-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+}
+
+.verification-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.verification-code-display {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.code-display {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--gold-primary);
+  background: var(--black-tertiary);
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  letter-spacing: 0.5rem;
+  border: 2px solid var(--gold-primary);
+}
+
+.code-hint {
+  color: var(--text-gray);
   font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+.countdown {
+  color: var(--gold-dark);
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+/* 验证码输入框样式 */
+.form-input[formControlName="verification_code"] {
+  text-align: center;
+  font-size: 1.2rem;
+  letter-spacing: 0.5rem;
+  font-weight: bold;
 }
